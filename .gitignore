@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Node / React Native
+node_modules/
+.expo/
+dist/
+
+# Environment and secrets
+.env
+.env.*
+
+# Course material (do not commit)
+*.pptx
+*.pdf
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
