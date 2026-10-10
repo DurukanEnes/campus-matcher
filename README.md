@@ -8,11 +8,11 @@ BLG411E Software Engineering – 2026-2027 Fall Term
 
 | Member | GitHub | Development Role | Management Role |
 |---|---|---|---|
-| Enes Durukan | @DurukanEnes | Developer | Project Manager |
-| Ali Çetin | @ali-cetin-itu | Developer | {_Management Role_} |
-| Erinç Özarı | @ituitis20-ozari19 | Developer | {_Management Role_} |
-| İbrahim Meral | @itu-itis23-merali22 | Developer | {_Management Role_} |
-| Mohammed Alashi | @Mohammed-Alashi | Developer | {_Management Role_} |
+| Enes Durukan | @DurukanEnes | Mobile Developer | Project Manager |
+| Erinç Özarı | @ituitis20-ozari19 | Mobile Developer | Mobile Team Lead |
+| Mohammed Alashi | @Mohammed-Alashi | Backend Developer | Backend Team Lead |
+| Ali Çetin | @ali-cetin-itu | Backend Developer (Secondary: DevOps / Cloud Engineer) | DevOps Lead |
+| İbrahim Meral | @itu-itis23-merali22 | Backend Developer (Secondary: QA / Test Engineer) | QA Lead |
 
 ## Repository Structure
 
