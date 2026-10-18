@@ -4,13 +4,18 @@
 CampusMatcher is a mobile application that enables university students to find companions for everyday campus activities such as studying at the library, working out at the gym, or having a meal at the cafeteria. A student specifies the activity, location, and time window they plan to attend, and the system matches them with other students who have submitted compatible plans. The project aims to reduce social isolation among students, make it easier to meet peers with similar routines, and encourage participation in campus life through a safe, verified, and university-exclusive platform.
 
 ## 2. Stakeholders & Roles
-* **Product Owner:** Sultan Çoğay
+* **Product Owner:**
 * **Software Engineering Team:**
     * Enes Durukan : Project Manager / Mobile Developer
-    * Erinç Özarı : Mobile Team Lead / Mobile Developer
+        * Implementing app screens and navigation flows, integrating the mobile app with the backend REST API, and handling push notifications on the device.
+    * Erinç Özarı : Mobile Team Lead / Mobile Developer & UI/UX Designer
+        * Owner of the UI/UX design: wireframes, interactive prototypes, and the visual style guide; implementing reusable UI components; reviewing mobile code.
     * Mohammed Alashi : Backend Team Lead / Backend Developer
-    * Ali Çetin : DevOps Lead / Backend Developer (Secondary: DevOps / Cloud Engineer)
-    * İbrahim Meral : QA Lead / Backend Developer (Secondary: QA / Test Engineer)
+        * API architecture and endpoint design, database schema design, and implementation of the matching engine; reviewing backend code.
+    * Ali Çetin : DevOps Lead / Backend Developer & DevOps Engineer
+        * Authentication and authorization (JWT, RBAC) and user/profile services; Docker setup, CI/CD pipelines, and cloud deployment.
+    * İbrahim Meral : QA Lead / Backend Developer & QA Engineer
+        * Messaging (WebSocket), notification, and moderation services; test strategy, automated test suites, and test-first enforcement.
 * **GH Repo/Project URL:** {_Do not fill this field in yet; to be filled after charter approval_}
 
 ## 3. Project Scope
