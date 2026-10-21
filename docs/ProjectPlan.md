@@ -8,7 +8,7 @@
 | **Report name** | Project Plan |
 | **Project title** | CampusMatcher |
 | **Group name / number** | Group B.B.F |
-| **Group members** | Enes Durukan — 150230100, Erinç Özarı — [Student ID], Mohammed Alashi — 150240935, Ali Çetin — [Student ID], İbrahim Meral — 150220101 |
+| **Group members** | Enes Durukan — 150230100, Erinç Özarı — 150190060, Mohammed Alashi — 150240935, Ali Çetin — 150190741, İbrahim Meral — 150220101 |
 | **Instructor** | Prof. Dr. Tolga Ovatman, Assoc. Prof. Dr. Ayşe Tosun |
 | **Submission date** | 2026-10-20 |
 | **Document version** | 1.0 |
