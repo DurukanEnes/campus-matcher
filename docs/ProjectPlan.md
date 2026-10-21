@@ -226,10 +226,10 @@ The team uses a matrix structure with three technical areas (mobile, backend, De
 | Member | Student ID | Role(s) | Main responsibilities |
 |---|---|---|---|
 | Enes Durukan | 150230100 | Project Manager; Mobile Developer | Planning and tracking on the project board, customer meetings and `customer-requests` issues, delivery coordination; app screens, navigation, API integration, and push notifications on the device. |
-| Erinç Özarı | [Student ID] | Mobile Team Lead; Mobile Developer & UI/UX Designer | Owner of the UI/UX design (wireframes, prototype, style guide); reusable UI components; mobile code reviews. |
-| Mohammed Alashi | [Student ID] | Backend Team Lead; Backend Developer | API architecture and endpoint design, database schema, the activity feed and join request (matching) services; backend code reviews. |
-| Ali Çetin | [Student ID] | DevOps Lead; Backend Developer & DevOps Engineer | Authentication and authorization (JWT, RBAC) and user/profile services; Docker, CI/CD pipeline, cloud deployment, and releases. |
-| İbrahim Meral | [Student ID] | QA Lead; Backend Developer & QA Engineer | Messaging (WebSocket), notification, and moderation services, plus the venue and activity post services; test strategy, automated test suites, and test-first enforcement. |
+| Erinç Özarı | 150190060 | Mobile Team Lead; Mobile Developer & UI/UX Designer | Owner of the UI/UX design (wireframes, prototype, style guide); reusable UI components; mobile code reviews. |
+| Mohammed Alashi | 150240935 | Backend Team Lead; Backend Developer | API architecture and endpoint design, database schema, the activity feed and join request (matching) services; backend code reviews. |
+| Ali Çetin | 150190741 | DevOps Lead; Backend Developer & DevOps Engineer | Authentication and authorization (JWT, RBAC) and user/profile services; Docker, CI/CD pipeline, cloud deployment, and releases. |
+| İbrahim Meral | 150220101 | QA Lead; Backend Developer & QA Engineer | Messaging (WebSocket), notification, and moderation services, plus the venue and activity post services; test strategy, automated test suites, and test-first enforcement. |
 
 ### 4.2 Member-to-Activity Assignment
 
