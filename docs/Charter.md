@@ -1,7 +1,7 @@
 # Project Charter: CampusMatcher
 
 ## 1. Project Purpose and Objectives
-CampusMatcher is a mobile application that enables university students to find companions for everyday campus activities such as studying at the library, working out at the gym, or having a meal at the cafeteria. A student specifies the activity, location, and time window they plan to attend, and the system matches them with other students who have submitted compatible plans. The project aims to reduce social isolation among students, make it easier to meet peers with similar routines, and encourage participation in campus life through a safe, verified, and university-exclusive platform.
+CampusMatcher is a mobile application that enables university students to find companions for everyday campus activities such as studying at the library, working out at the gym, or having a meal at the cafeteria. A student either publishes an activity post (Add Activity) with the activity, campus venue, and time window they plan to attend, or browses the feed of other students' posts (Join Activity) and sends the post owner a join request with a message. When the owner accepts the request, the two students are matched and arrange the meeting in the chat. The project aims to reduce social isolation among students, make it easier to meet peers with similar routines, and encourage participation in campus life through a safe, verified, and university-exclusive platform.
 
 ## 2. Stakeholders & Roles
 * **Product Owner:**
@@ -11,7 +11,7 @@ CampusMatcher is a mobile application that enables university students to find c
     * Erinç Özarı : Mobile Team Lead / Mobile Developer & UI/UX Designer
         * Owner of the UI/UX design: wireframes, interactive prototypes, and the visual style guide; implementing reusable UI components; reviewing mobile code.
     * Mohammed Alashi : Backend Team Lead / Backend Developer
-        * API architecture and endpoint design, database schema design, and implementation of the matching engine; reviewing backend code.
+        * API architecture and endpoint design, database schema design, and implementation of the activity feed and join request (matching) services; reviewing backend code.
     * Ali Çetin : DevOps Lead / Backend Developer & DevOps Engineer
         * Authentication and authorization (JWT, RBAC) and user/profile services; Docker setup, CI/CD pipelines, and cloud deployment.
     * İbrahim Meral : QA Lead / Backend Developer & QA Engineer
@@ -26,16 +26,19 @@ The application belongs to the domain of social networking and campus life withi
 * **User Registration and Authentication:** Account creation restricted to verified university e-mail addresses, secure login, and token-based session management.
 * **Role-Based Authorization:** Distinct permissions for students and administrators.
 * **User Profile Management:** Management of basic profile information, faculty/department, interests, and activity preferences (e.g., workout type, study subject).
-* **Activity Plan Submission:** Creation, editing, and cancellation of activity plans that specify the activity category (library, gym, cafeteria), location, and time window.
-* **Matching Engine:** Automatic matching of users based on activity category, location, overlapping time windows, and stated preferences.
-* **Match Lifecycle Management:** Viewing suggested matches, accepting or declining them, and cancelling confirmed matches.
-* **In-App Messaging:** A text-based chat between matched users to coordinate the meeting.
-* **Notifications:** Push notifications for new matches, match responses, and incoming messages.
+* **Home Screen:** Two main actions, Add Activity and Join Activity. The application does not use swipe-based matching.
+* **Activity Posts (Add Activity):** Creation, editing, and deletion of activity posts that specify the activity category (library, gym, cafeteria), the campus venue, the time window, and an optional short note (e.g., "Library, 19:00–23:00"). The venue is selected from a predefined list of campus locations; the device's GPS location is not used.
+* **Activity Feed (Join Activity):** A social-media-style feed that lists the active posts of other students with their details, with filters for activity category and hour.
+* **Join Requests and Matching:** A student opens a post in the feed and sends the post owner a join request with a message. The owner accepts or declines the request; an accepted request is a match. One hour after the match, the post is removed from the feed automatically. Posts whose time window has ended are also removed. For example, Enes publishes a library post, Ahmet finds it in the feed and sends a request, Enes accepts it, and the post is removed one hour later. A match exists only for a single post and does not create a lasting connection between users; the application has no friend system.
+* **In-App Messaging:** A text-based chat between the post owner and the requesting student, starting with the join request message. The users agree on the exact meeting point (e.g., "second floor, near the entrance") in this chat. The chat closes when the post is removed.
+* **Notifications:** Push notifications for new join requests, request responses (accepted or declined), and incoming messages.
 * **Safety and Moderation:** Blocking and reporting users, and an administrator panel for reviewing reports and suspending accounts.
 * **Service-Based Backend and Cloud Deployment:** A REST API offered by the backend services, hosted on a cloud platform with a relational database.
 
 ### Out-of-Scope
-* Real-time GPS location tracking of users.
+* GPS and device location services, including real-time location tracking, live location sharing, map views, and distance-based matching. Location is limited to the campus venue selected in the activity post, and the exact meeting point is shared by the users in the chat.
+* Automatic or swipe-based matching (e.g., swiping left or right on user profiles); students choose posts themselves in the feed.
+* A friend system (sending friend requests, adding or removing friends, or keeping a friend list) and any other persistent social connection between users.
 * Dating or romantic matching features.
 * Voice and video calling.
 * Integration with official university systems (student information system, campus card, facility reservation systems).
