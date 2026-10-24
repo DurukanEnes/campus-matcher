@@ -20,10 +20,10 @@
 ### 1.1 Scope
 
 **Project overview:**
-University students often skip campus activities such as studying at the library, working out at the gym, or eating at the cafeteria because they have no one to go with. CampusMatcher is a mobile application (Android and iOS) for enrolled university students that solves this problem. The application has two main actions on its home screen. With **Add Activity**, a student publishes an activity post with an activity category, a campus venue chosen from a predefined list, and a time window (e.g., *Library, 19:00–23:00*). With **Join Activity**, a student browses a social-media-style feed of all active posts, filters it by activity and hour, opens a post to see its details, and sends the post owner a join request with a message. When the owner accepts the request, the two students are matched and agree on the exact meeting point in the chat. A matched post is removed from the feed automatically one hour after the match, and posts whose time window has ended are removed as well. The application has no swipe-based matching and no friend system; a match belongs to a single post only. System administrators moderate the platform by reviewing user reports and suspending accounts.
+Students at Istanbul Technical University (İTÜ) often skip campus activities such as studying at the library, working out at the gym, or eating at the cafeteria because they have no one to go with. CampusMatcher is a mobile application (Android and iOS) developed specifically for İTÜ students to solve this problem. Only students with a verified İTÜ e-mail address (`@itu.edu.tr`) can register, and the venue list contains İTÜ campus locations (e.g., the Mustafa İnan Library, campus gyms, and cafeterias). The application has two main actions on its home screen. With **Add Activity**, a student publishes an activity post with an activity category, a campus venue chosen from a predefined list, and a time window (e.g., *Library, 19:00–23:00*). With **Join Activity**, a student browses a social-media-style feed of all active posts, filters it by activity and hour, opens a post to see its details, and sends the post owner a join request with a message. When the owner accepts the request, the two students are matched and agree on the exact meeting point in the chat. A matched post is removed from the feed automatically one hour after the match, and posts whose time window has ended are removed as well. The application has no swipe-based matching and no friend system; a match belongs to a single post only. System administrators moderate the platform by reviewing user reports and suspending accounts.
 
 **In scope:**
-- User registration restricted to verified university e-mail addresses, login, and token-based sessions.
+- User registration restricted to verified İTÜ e-mail addresses (`@itu.edu.tr`), login, and token-based sessions.
 - Role-based authorization for students and administrators.
 - User profile management (profile information, faculty/department, interests, activity preferences).
 - Home screen with the two main actions: Add Activity and Join Activity.
@@ -57,7 +57,7 @@ University students often skip campus activities such as studying at the library
 - **Technology:** Python/FastAPI backend, React Native (Expo) mobile application, PostgreSQL database, JWT authentication, GitHub Actions for CI/CD.
 - **Process:** All work is tracked as GitHub issues on the project board. Nobody commits directly to `main`; every change goes through a pull request with at least one approval. A test-first approach is followed.
 - **AI agents:** Claude Code, GitHub Copilot, and ChatGPT are used as assistants. Every AI-generated output is reviewed by a team member in a pull request, and AI usage, effort, introduced errors, and their fixes are reported.
-- **Domain:** The campus venue list is predefined and stored as seed data; no location data is collected from devices. University e-mail addresses are checked by their domain (e.g., `@itu.edu.tr`). The customer (TA) may change requirements; every request is recorded as a `customer-requests` issue within 48 hours.
+- **Domain:** The campus venue list is predefined and stored as seed data; no location data is collected from devices. The application is only for İTÜ students: e-mail addresses are checked by the `@itu.edu.tr` domain, and the venue list contains only İTÜ campus locations. The customer (TA) may change requirements; every request is recorded as a `customer-requests` issue within 48 hours.
 
 ### 1.2 Deliverables
 
@@ -76,7 +76,7 @@ University students often skip campus activities such as studying at the library
 | Task ID | Functional requirement / task | Description | Related deliverable ID(s) |
 |---|---|---|---|
 | T-01 | System foundation | Backend and mobile project scaffolds and the database schema that all features build on. | D-01, D-02, D-03 |
-| T-02 | Registration, authentication, and authorization | Students register with a verified university e-mail address and log in; the system issues tokens and restricts endpoints by role (student, admin). | D-01, D-02, D-03 |
+| T-02 | Registration, authentication, and authorization | İTÜ students register with a verified `@itu.edu.tr` e-mail address and log in; the system issues tokens and restricts endpoints by role (student, admin). | D-01, D-02, D-03 |
 | T-03 | Profile management | Students view and update their profile information, faculty/department, interests, and activity preferences. | D-01, D-02 |
 | T-04 | Activity posts (Add Activity) | Students publish, edit, and delete activity posts with a category, a campus venue from the predefined list, and a time window; expired posts are removed automatically. | D-01, D-02, D-03 |
 | T-05 | Activity feed and join requests (Join Activity) | Students browse and filter the feed of active posts and send join requests; post owners accept or decline them. An accepted request is a match, and the matched post is removed from the feed one hour later. | D-01, D-02 |
@@ -92,7 +92,7 @@ University students often skip campus activities such as studying at the library
 
 | Quality attribute | Requirement / concern | How it will be assessed |
 |---|---|---|
-| Security | Only verified university e-mail addresses can register. Passwords are stored hashed (bcrypt); all traffic uses HTTPS; JWT access tokens expire; admin endpoints are restricted by role; users can only read chats of their own active matches. | Automated authorization tests (missing, expired, and wrong-role tokens), input validation tests, and a security checklist review in WBS-10.3. |
+| Security | Only verified İTÜ e-mail addresses (`@itu.edu.tr`) can register. Passwords are stored hashed (bcrypt); all traffic uses HTTPS; JWT access tokens expire; admin endpoints are restricted by role; users can only read chats of their own active matches. | Automated authorization tests (missing, expired, and wrong-role tokens), input validation tests, and a security checklist review in WBS-10.3. |
 | Performance | API responses within 500 ms (95th percentile) with 100 concurrent users; the feed loads and applies filters within 1 second with 500 active posts; chat messages are delivered within 2 seconds. | Load tests on the staging environment (e.g., Locust) and timing assertions in integration tests (WBS-10.3). |
 | Usability | A student can publish an activity post in under 30 seconds and in at most two screens, and can find a suitable post in the feed with at most two filter selections. The interface follows a consistent style guide with readable text and sufficient color contrast. | Usability test with at least five students using the prototype (WBS-9.2) and the final application (WBS-10.3). |
 | Reliability | The service is available during the demo; the chat reconnects automatically after a network loss; matched and expired posts are removed on time even after a server restart. | End-to-end tests (WBS-10.2), reconnect tests, and monitoring of the staging environment. |
@@ -233,50 +233,52 @@ The team uses a matrix structure with three technical areas (mobile, backend, De
 
 ### 4.2 Member-to-Activity Assignment
 
-| WBS activity ID | Assigned member | Responsibility | Allocation to activity (FTE) |
-|---|---|---|---|
-| WBS-1.1 | Mohammed Alashi | Sets up the FastAPI project and module layout | 0.4 |
-| WBS-1.2 | Mohammed Alashi | Designs the schema and writes the migrations | 0.4 |
-| WBS-1.3 | Enes Durukan | Creates the Expo project, navigation, and API client | 0.4 |
-| WBS-2.1 | Ali Çetin | Implements the registration and verification endpoints | 0.4 |
-| WBS-2.2 | Ali Çetin | Implements token handling and authorization middleware | 0.4 |
-| WBS-2.3 | Enes Durukan | Builds the authentication screens and token storage | 0.4 |
-| WBS-3.1 | Ali Çetin | Implements the profile endpoints and their tests | 0.4 |
-| WBS-3.2 | Erinç Özarı | Builds the profile screens using the style guide | 0.4 |
-| WBS-4.1 | İbrahim Meral | Prepares venue seed data and the listing endpoint | 0.2 |
-| WBS-4.2 | İbrahim Meral | Implements post endpoints, validation, and the removal job | 0.4 |
-| WBS-4.3 | Enes Durukan | Builds the home screen and the Add Activity flow | 0.4 |
-| WBS-5.1 | Mohammed Alashi | Designs and implements the feed query and filters | 0.4 |
-| WBS-5.2 | Mohammed Alashi | Implements join requests, match states, and post closing | 0.4 |
-| WBS-5.3 | Erinç Özarı | Builds the feed, filters, post detail, and request inbox | 0.4 |
-| WBS-6.1 | İbrahim Meral | Implements the WebSocket service and persistence | 0.4 |
-| WBS-6.1 | Mohammed Alashi | Connects chat access rules to join requests and matches | 0.4 |
-| WBS-6.2 | Enes Durukan | Builds the chat screen and WebSocket client | 0.4 |
-| WBS-7.1 | İbrahim Meral | Integrates FCM and builds the notification sender | 0.4 |
-| WBS-7.2 | Enes Durukan | Implements notification handling on the device | 0.4 |
-| WBS-8.1 | İbrahim Meral | Implements block, report, and suspension logic | 0.4 |
-| WBS-8.2 | Erinç Özarı | Builds the safety actions and admin screens | 0.4 |
-| WBS-9.1 | Erinç Özarı | Designs the wireframes for all screens | 0.4 |
-| WBS-9.2 | Erinç Özarı | Builds the prototype and style guide | 0.4 |
-| WBS-10.1 | İbrahim Meral | Defines the test strategy and coverage gates | 0.4 |
-| WBS-10.2 | İbrahim Meral | Writes the integration and end-to-end tests | 0.4 |
-| WBS-10.3 | İbrahim Meral | Runs security checks and tracks defects | 0.2 |
-| WBS-10.3 | Mohammed Alashi | Fixes backend defects and runs load tests | 0.2 |
-| WBS-10.3 | Enes Durukan | Fixes mobile defects | 0.2 |
-| WBS-10.3 | Erinç Özarı | Fixes UI defects and checks usability | 0.2 |
-| WBS-11.1 | Ali Çetin | Creates the CI workflow and branch rules | 0.4 |
-| WBS-11.2 | Ali Çetin | Builds the Docker image and staging environment | 0.4 |
-| WBS-11.3 | Ali Çetin | Deploys the final version and publishes the release | 0.4 |
-| WBS-12.1 | Enes Durukan | Coordinates user stories and acceptance criteria | 0.1 |
-| WBS-12.1 | İbrahim Meral | Writes test-oriented acceptance criteria | 0.1 |
-| WBS-12.2 | Erinç Özarı | Adds prototypes and wireframes | 0.1 |
-| WBS-12.2 | Mohammed Alashi | Writes data and behavioral models | 0.1 |
-| WBS-12.3 | Mohammed Alashi | Writes the architecture and API design | 0.1 |
-| WBS-12.3 | Ali Çetin | Writes the deployment design | 0.1 |
-| WBS-12.4 | İbrahim Meral | Writes the test plan and test cases | 0.1 |
-| WBS-12.4 | Ali Çetin | Documents CI and test environments | 0.1 |
-| WBS-12.5 | Enes Durukan | Compiles the AI usage report and presentation | 0.1 |
-| WBS-12.5 | Erinç Özarı | Prepares the demo scenario | 0.1 |
+Activities are listed in chronological order of their scheduled start date (from Section 5).
+
+| WBS activity ID | Assigned member | Responsibility | Allocation to activity (FTE) | Scheduled dates |
+|---|---|---|---|---|
+| WBS-12.1 | Enes Durukan | Coordinates user stories and acceptance criteria | 0.1 | 20.10 – 02.11 |
+| WBS-12.1 | İbrahim Meral | Writes test-oriented acceptance criteria | 0.1 | 20.10 – 02.11 |
+| WBS-1.1 | Mohammed Alashi | Sets up the FastAPI project and module layout | 0.4 | 26.10 – 30.10 |
+| WBS-1.3 | Enes Durukan | Creates the Expo project, navigation, and API client | 0.4 | 26.10 – 30.10 |
+| WBS-9.1 | Erinç Özarı | Designs the wireframes for all screens | 0.4 | 26.10 – 02.11 |
+| WBS-10.1 | İbrahim Meral | Defines the test strategy and coverage gates | 0.4 | 26.10 – 30.10 |
+| WBS-11.1 | Ali Çetin | Creates the CI workflow and branch rules | 0.4 | 26.10 – 30.10 |
+| WBS-1.2 | Mohammed Alashi | Designs the schema and writes the migrations | 0.4 | 30.10 – 05.11 |
+| WBS-7.1 | İbrahim Meral | Integrates FCM and builds the notification sender | 0.4 | 30.10 – 02.11 |
+| WBS-2.3 | Enes Durukan | Builds the authentication screens and token storage | 0.4 | 02.11 – 09.11 |
+| WBS-9.2 | Erinç Özarı | Builds the prototype and style guide | 0.4 | 02.11 – 09.11 |
+| WBS-2.2 | Ali Çetin | Implements token handling and authorization middleware | 0.4 | 05.11 – 13.11 |
+| WBS-4.1 | İbrahim Meral | Prepares venue seed data and the listing endpoint | 0.2 | 05.11 – 09.11 |
+| WBS-5.1 | Mohammed Alashi | Designs and implements the feed query and filters | 0.4 | 05.11 – 13.11 |
+| WBS-3.2 | Erinç Özarı | Builds the profile screens using the style guide | 0.4 | 09.11 – 13.11 |
+| WBS-4.2 | İbrahim Meral | Implements post endpoints, validation, and the removal job | 0.4 | 09.11 – 16.11 |
+| WBS-4.3 | Enes Durukan | Builds the home screen and the Add Activity flow | 0.4 | 09.11 – 16.11 |
+| WBS-12.2 | Erinç Özarı | Adds prototypes and wireframes | 0.1 | 09.11 – 23.11 |
+| WBS-12.2 | Mohammed Alashi | Writes data and behavioral models | 0.1 | 09.11 – 23.11 |
+| WBS-2.1 | Ali Çetin | Implements the registration and verification endpoints | 0.4 | 13.11 – 19.11 |
+| WBS-5.3 | Erinç Özarı | Builds the feed, filters, post detail, and request inbox | 0.4 | 13.11 – 27.11 |
+| WBS-5.2 | Mohammed Alashi | Implements join requests, match states, and post closing | 0.4 | 16.11 – 23.11 |
+| WBS-6.2 | Enes Durukan | Builds the chat screen and WebSocket client | 0.4 | 16.11 – 23.11 |
+| WBS-8.1 | İbrahim Meral | Implements block, report, and suspension logic | 0.4 | 16.11 – 23.11 |
+| WBS-3.1 | Ali Çetin | Implements the profile endpoints and their tests | 0.4 | 19.11 – 23.11 |
+| WBS-6.1 | İbrahim Meral | Implements the WebSocket service and persistence | 0.4 | 23.11 – 30.11 |
+| WBS-6.1 | Mohammed Alashi | Connects chat access rules to join requests and matches | 0.4 | 23.11 – 30.11 |
+| WBS-7.2 | Enes Durukan | Implements notification handling on the device | 0.4 | 23.11 – 27.11 |
+| WBS-11.2 | Ali Çetin | Builds the Docker image and staging environment | 0.4 | 23.11 – 30.11 |
+| WBS-12.3 | Mohammed Alashi | Writes the architecture and API design | 0.1 | 23.11 – 07.12 |
+| WBS-12.3 | Ali Çetin | Writes the deployment design | 0.1 | 23.11 – 07.12 |
+| WBS-8.2 | Erinç Özarı | Builds the safety actions and admin screens | 0.4 | 27.11 – 03.12 |
+| WBS-10.2 | İbrahim Meral | Writes the integration and end-to-end tests | 0.4 | 30.11 – 07.12 |
+| WBS-10.3 | İbrahim Meral | Runs security checks and tracks defects | 0.2 | 07.12 – 14.12 |
+| WBS-10.3 | Mohammed Alashi | Fixes backend defects and runs load tests | 0.2 | 07.12 – 14.12 |
+| WBS-10.3 | Enes Durukan | Fixes mobile defects | 0.2 | 07.12 – 14.12 |
+| WBS-10.3 | Erinç Özarı | Fixes UI defects and checks usability | 0.2 | 07.12 – 14.12 |
+| WBS-12.4 | İbrahim Meral | Writes the test plan and test cases | 0.1 | 07.12 – 21.12 |
+| WBS-12.4 | Ali Çetin | Documents CI and test environments | 0.1 | 07.12 – 21.12 |
+| WBS-11.3 | Ali Çetin | Deploys the final version and publishes the release | 0.4 | 14.12 – 17.12 |
+| WBS-12.5 | Enes Durukan | Compiles the AI usage report and presentation | 0.1 | 21.12 – 28.12 |
+| WBS-12.5 | Erinç Özarı | Prepares the demo scenario | 0.1 | 21.12 – 28.12 |
 
 **Availability or allocation constraints:**
 - Each member works about 20 hours per week on the project (0.5 FTE): at most 0.4 FTE on development and 0.1 FTE on documentation and meetings. The assignments above never exceed 0.4 FTE of development work for any member in any week.
