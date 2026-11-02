@@ -11,8 +11,8 @@
 | **Group members** | Enes Durukan — 150230100, Erinç Özarı — 150190060, Mohammed Alashi — 150240935, Ali Çetin — 150190741, İbrahim Meral — 150220101 |
 | **Instructor** | Prof. Dr. Tolga Ovatman, Assoc. Prof. Dr. Ayşe Tosun |
 | **Submission date** | 2026-10-20 |
-| **Document version** | 1.1 |
-| **Revision** | 1.1 (2026-10-29): schedule re-levelled after customer feedback (all dependencies shown, mobile tasks split into UI and integration, no parallel development tasks per member), app opened to all İTÜ members, end-of-day deletion of activities and chats, AI agents reduced to two. |
+| **Document version** | 1.2 |
+| **Revision** | 1.2 (2026-11-02): Section 4.2 table format updated. 1.1 (2026-10-29): schedule re-levelled after customer feedback (all dependencies shown, mobile tasks split into UI and integration, no parallel development tasks per member), app opened to all İTÜ members, end-of-day deletion of activities and chats, AI agents reduced to two. |
 
 ---
 
@@ -253,60 +253,105 @@ The team uses a matrix structure with three technical areas (mobile, backend, De
 
 ### 4.2 Member-to-Activity Assignment
 
-Activities are listed in chronological order of their scheduled start date (from Section 5).
+Activities are listed in chronological order of their start date, with their assigned members and dependencies.
 
-| WBS activity ID | Assigned member | Responsibility | Allocation to activity (FTE) | Scheduled dates |
-|---|---|---|---|---|
-| WBS-1.1 | Mohammed Alashi | Sets up the FastAPI project and module layout | 0.4 | 29.10 – 01.11 |
-| WBS-1.3 | Enes Durukan | Creates the Expo project, navigation, and API client | 0.4 | 29.10 – 01.11 |
-| WBS-9.1 | Erinç Özarı | Designs the wireframes for all screens | 0.4 | 29.10 – 04.11 |
-| WBS-10.1 | İbrahim Meral | Defines the test strategy and coverage gates | 0.4 | 29.10 – 01.11 |
-| WBS-11.1 | Ali Çetin | Creates the CI workflow and branch rules | 0.4 | 29.10 – 01.11 |
-| WBS-12.1 | Enes Durukan | Coordinates user stories and acceptance criteria | 0.1 | 29.10 – 02.11 |
-| WBS-12.1 | İbrahim Meral | Writes test-oriented acceptance criteria | 0.1 | 29.10 – 02.11 |
-| WBS-1.2 | Mohammed Alashi | Designs the schema and writes the migrations | 0.4 | 02.11 – 08.11 |
-| WBS-10.2a | İbrahim Meral | Writes the end-to-end scenarios and test data | 0.4 | 02.11 – 05.11 |
-| WBS-11.2 | Ali Çetin | Builds the Docker image and staging environment | 0.4 | 02.11 – 08.11 |
-| WBS-12.2 | Erinç Özarı | Adds prototypes and wireframes | 0.1 | 03.11 – 23.11 |
-| WBS-12.2 | Mohammed Alashi | Writes data and behavioral models | 0.1 | 03.11 – 23.11 |
-| WBS-2.3a | Enes Durukan | Builds the authentication screens with mock data | 0.4 | 05.11 – 08.11 |
-| WBS-9.2 | Erinç Özarı | Builds the prototype and style guide | 0.4 | 05.11 – 11.11 |
-| WBS-2.2 | Ali Çetin | Implements token handling and authorization middleware | 0.4 | 09.11 – 15.11 |
-| WBS-4.1 | Mohammed Alashi | Prepares venue seed data and the listing endpoint | 0.4 | 09.11 – 10.11 |
-| WBS-7.1 | İbrahim Meral | Integrates FCM and builds the notification sender | 0.4 | 09.11 – 12.11 |
-| WBS-3.2a | Erinç Özarı | Builds the profile screens using the style guide | 0.4 | 12.11 – 13.11 |
-| WBS-4.3a | Enes Durukan | Builds the home screen and the Add Activity flow | 0.4 | 12.11 – 15.11 |
-| WBS-5.3a | Erinç Özarı | Builds the feed, filters, post detail, and request inbox | 0.4 | 14.11 – 20.11 |
-| WBS-2.1 | Ali Çetin | Implements the registration and verification endpoints | 0.4 | 16.11 – 22.11 |
-| WBS-4.2 | İbrahim Meral | Implements post endpoints, validation, and the end-of-day job | 0.4 | 16.11 – 22.11 |
-| WBS-5.1 | Mohammed Alashi | Designs and implements the feed query and filters | 0.4 | 16.11 – 22.11 |
-| WBS-6.2a | Enes Durukan | Builds the chat screen with mock messages | 0.4 | 16.11 – 19.11 |
-| WBS-7.2 | Enes Durukan | Implements notification handling on the device | 0.4 | 20.11 – 23.11 |
-| WBS-8.2a | Erinç Özarı | Builds the safety actions and admin screens | 0.4 | 21.11 – 24.11 |
-| WBS-3.1 | Ali Çetin | Implements the profile endpoints and their tests | 0.4 | 23.11 – 26.11 |
-| WBS-5.2 | Mohammed Alashi | Implements join requests, match states, and post closing | 0.4 | 23.11 – 29.11 |
-| WBS-2.3b | Enes Durukan | Connects the screens to the API and stores tokens | 0.4 | 24.11 – 27.11 |
-| WBS-12.3 | Mohammed Alashi | Writes the architecture and API design | 0.1 | 24.11 – 07.12 |
-| WBS-12.3 | Ali Çetin | Writes the deployment design | 0.1 | 24.11 – 07.12 |
-| WBS-3.2b | Erinç Özarı | Connects the profile screens to the API | 0.4 | 27.11 – 28.11 |
-| WBS-8.1 | Ali Çetin | Implements block, report, and suspension logic | 0.4 | 27.11 – 03.12 |
-| WBS-4.3b | Enes Durukan | Connects the Add Activity flow to the post API | 0.4 | 28.11 – 01.12 |
-| WBS-5.3b | Erinç Özarı | Connects the feed and request screens to the APIs | 0.4 | 30.11 – 06.12 |
-| WBS-6.1 | İbrahim Meral | Implements the WebSocket service and persistence | 0.4 | 30.11 – 06.12 |
-| WBS-6.1 | Mohammed Alashi | Connects chat access rules to join requests and matches | 0.4 | 30.11 – 06.12 |
-| WBS-6.2b | Enes Durukan | Builds the WebSocket client and reconnect handling | 0.4 | 07.12 – 10.12 |
-| WBS-8.2b | Erinç Özarı | Connects the moderation screens to the API | 0.4 | 07.12 – 10.12 |
-| WBS-10.2b | İbrahim Meral | Runs and completes the integration and end-to-end tests | 0.4 | 07.12 – 10.12 |
-| WBS-12.4 | İbrahim Meral | Writes the test plan and test cases | 0.1 | 08.12 – 21.12 |
-| WBS-12.4 | Ali Çetin | Documents CI and test environments | 0.1 | 08.12 – 21.12 |
-| WBS-10.3 | İbrahim Meral | Runs security checks and tracks defects | 0.2 | 11.12 – 16.12 |
-| WBS-10.3 | Mohammed Alashi | Fixes backend defects and runs load tests | 0.2 | 11.12 – 16.12 |
-| WBS-10.3 | Ali Çetin | Fixes authentication and deployment defects | 0.2 | 11.12 – 16.12 |
-| WBS-10.3 | Enes Durukan | Fixes mobile defects | 0.2 | 11.12 – 16.12 |
-| WBS-10.3 | Erinç Özarı | Fixes UI defects and checks usability | 0.2 | 11.12 – 16.12 |
-| WBS-11.3 | Ali Çetin | Deploys the final version and publishes the release | 0.4 | 17.12 – 20.12 |
-| WBS-12.5 | Enes Durukan | Compiles the AI usage report and presentation | 0.1 | 23.12 – 28.12 |
-| WBS-12.5 | Erinç Özarı | Prepares the demo scenario | 0.1 | 23.12 – 28.12 |
+| # | WBS ID | Task Name | Responsible Member(s) | Start Date | End Date | Dependencies |
+|---|---|---|---|---|---|---|
+| 1 | WBS-1.1 | Backend scaffold | Mohammed Alashi | 29.10.2026 | 01.11.2026 | None |
+| 2 | WBS-1.3 | Mobile app scaffold | Enes Durukan | 29.10.2026 | 01.11.2026 | None |
+| 3 | WBS-9.1 | Wireframes | Erinç Özarı | 29.10.2026 | 04.11.2026 | None |
+| 4 | WBS-10.1 | Test strategy and test-first setup | İbrahim Meral | 29.10.2026 | 01.11.2026 | None |
+| 5 | WBS-11.1 | CI pipeline | Ali Çetin | 29.10.2026 | 01.11.2026 | None |
+| 6 | WBS-12.1 | Requirements Specification | Enes Durukan, İbrahim Meral | 29.10.2026 | 02.11.2026 | None |
+| 7 | WBS-1.2 | Database schema and migrations | Mohammed Alashi | 02.11.2026 | 08.11.2026 | WBS-1.1 |
+| 8 | WBS-10.2a | End-to-end test scenarios (test-first) | İbrahim Meral | 02.11.2026 | 05.11.2026 | WBS-10.1 |
+| 9 | WBS-11.2 | Containerization and staging deployment | Ali Çetin | 02.11.2026 | 08.11.2026 | WBS-1.1, WBS-11.1 |
+| 10 | WBS-12.2 | Requirements Analysis | Erinç Özarı, Mohammed Alashi | 03.11.2026 | 23.11.2026 | WBS-12.1 |
+| 11 | WBS-2.3a | Authentication screens (UI) | Enes Durukan | 05.11.2026 | 08.11.2026 | WBS-1.3, WBS-9.1 |
+| 12 | WBS-9.2 | Interactive prototype and style guide | Erinç Özarı | 05.11.2026 | 11.11.2026 | WBS-9.1 |
+| 13 | WBS-2.2 | Login, JWT sessions, and RBAC | Ali Çetin | 09.11.2026 | 15.11.2026 | WBS-1.2, WBS-11.1 |
+| 14 | WBS-4.1 | Campus venue catalog | Mohammed Alashi | 09.11.2026 | 10.11.2026 | WBS-1.2 |
+| 15 | WBS-7.1 | Push notification service | İbrahim Meral | 09.11.2026 | 12.11.2026 | WBS-1.2 |
+| 16 | WBS-3.2a | Profile screens (UI) | Erinç Özarı | 12.11.2026 | 13.11.2026 | WBS-9.2 |
+| 17 | WBS-4.3a | Home and Add Activity screens (UI) | Enes Durukan | 12.11.2026 | 15.11.2026 | WBS-9.2, WBS-2.3a |
+| 18 | WBS-5.3a | Join Activity feed screens (UI) | Erinç Özarı | 14.11.2026 | 20.11.2026 | WBS-9.2, WBS-3.2a |
+| 19 | WBS-2.1 | Registration and e-mail verification API | Ali Çetin | 16.11.2026 | 22.11.2026 | WBS-2.2 |
+| 20 | WBS-4.2 | Activity post API and end-of-day deletion | İbrahim Meral | 16.11.2026 | 22.11.2026 | WBS-4.1, WBS-2.2 |
+| 21 | WBS-5.1 | Activity feed API | Mohammed Alashi | 16.11.2026 | 22.11.2026 | WBS-4.1, WBS-2.2 |
+| 22 | WBS-6.2a | Chat screen (UI) | Enes Durukan | 16.11.2026 | 19.11.2026 | WBS-4.3a, WBS-9.2 |
+| 23 | WBS-7.2 | Push notification handling in the app | Enes Durukan | 20.11.2026 | 23.11.2026 | WBS-6.2a, WBS-7.1 |
+| 24 | WBS-8.2a | Moderation and safety screens (UI) | Erinç Özarı | 21.11.2026 | 24.11.2026 | WBS-5.3a |
+| 25 | WBS-3.1 | Profile API | Ali Çetin | 23.11.2026 | 26.11.2026 | WBS-2.1 |
+| 26 | WBS-5.2 | Join request and match API | Mohammed Alashi | 23.11.2026 | 29.11.2026 | WBS-5.1, WBS-4.2 |
+| 27 | WBS-2.3b | Authentication screens (integration) | Enes Durukan | 24.11.2026 | 27.11.2026 | WBS-2.3a, WBS-2.1, WBS-2.2, WBS-11.2 |
+| 28 | WBS-12.3 | Design Specification | Mohammed Alashi, Ali Çetin | 24.11.2026 | 07.12.2026 | WBS-12.2 |
+| 29 | WBS-3.2b | Profile screens (integration) | Erinç Özarı | 27.11.2026 | 28.11.2026 | WBS-3.2a, WBS-3.1, WBS-11.2 |
+| 30 | WBS-8.1 | Block, report, and suspension API | Ali Çetin | 27.11.2026 | 03.12.2026 | WBS-2.2, WBS-4.2 |
+| 31 | WBS-4.3b | Home and Add Activity screens (integration) | Enes Durukan | 28.11.2026 | 01.12.2026 | WBS-4.3a, WBS-4.2, WBS-11.2 |
+| 32 | WBS-5.3b | Join Activity feed screens (integration) | Erinç Özarı | 30.11.2026 | 06.12.2026 | WBS-5.3a, WBS-5.1, WBS-5.2, WBS-11.2 |
+| 33 | WBS-6.1 | Real-time chat service | İbrahim Meral, Mohammed Alashi | 30.11.2026 | 06.12.2026 | WBS-5.2 |
+| 34 | WBS-6.2b | Chat screen (integration) | Enes Durukan | 07.12.2026 | 10.12.2026 | WBS-6.2a, WBS-6.1 |
+| 35 | WBS-8.2b | Moderation and safety screens (integration) | Erinç Özarı | 07.12.2026 | 10.12.2026 | WBS-8.2a, WBS-8.1 |
+| 36 | WBS-10.2b | Integration and end-to-end test run | İbrahim Meral | 07.12.2026 | 10.12.2026 | WBS-10.2a, WBS-3.1, WBS-6.1, WBS-7.1, WBS-8.1, WBS-11.2 |
+| 37 | WBS-12.4 | Test Specification | İbrahim Meral, Ali Çetin | 08.12.2026 | 21.12.2026 | WBS-12.3 |
+| 38 | WBS-10.3 | Performance, security tests, and bug fixing | Whole team (all 5) | 11.12.2026 | 16.12.2026 | WBS-10.2b, WBS-2.3b, WBS-3.2b, WBS-4.3b, WBS-5.3b, WBS-6.2b, WBS-7.2, WBS-8.2b |
+| 39 | WBS-11.3 | Production deployment and v1.0.0 release | Ali Çetin | 17.12.2026 | 20.12.2026 | WBS-10.3, WBS-11.2 |
+| 40 | WBS-12.5 | AI usage report, demo, and final presentation | Enes Durukan, Erinç Özarı | 23.12.2026 | 28.12.2026 | WBS-12.4, WBS-11.3 |
+
+**Responsibility and allocation of each member:**
+
+| WBS activity ID | Assigned member | Responsibility | Allocation to activity (FTE) |
+|---|---|---|---|
+| WBS-1.1 | Mohammed Alashi | Sets up the FastAPI project and module layout | 0.4 |
+| WBS-1.3 | Enes Durukan | Creates the Expo project, navigation, and API client | 0.4 |
+| WBS-9.1 | Erinç Özarı | Designs the wireframes for all screens | 0.4 |
+| WBS-10.1 | İbrahim Meral | Defines the test strategy and coverage gates | 0.4 |
+| WBS-11.1 | Ali Çetin | Creates the CI workflow and branch rules | 0.4 |
+| WBS-12.1 | Enes Durukan | Coordinates user stories and acceptance criteria | 0.1 |
+| WBS-12.1 | İbrahim Meral | Writes test-oriented acceptance criteria | 0.1 |
+| WBS-1.2 | Mohammed Alashi | Designs the schema and writes the migrations | 0.4 |
+| WBS-10.2a | İbrahim Meral | Writes the end-to-end scenarios and test data | 0.4 |
+| WBS-11.2 | Ali Çetin | Builds the Docker image and staging environment | 0.4 |
+| WBS-12.2 | Erinç Özarı | Adds prototypes and wireframes | 0.1 |
+| WBS-12.2 | Mohammed Alashi | Writes data and behavioral models | 0.1 |
+| WBS-2.3a | Enes Durukan | Builds the authentication screens with mock data | 0.4 |
+| WBS-9.2 | Erinç Özarı | Builds the prototype and style guide | 0.4 |
+| WBS-2.2 | Ali Çetin | Implements token handling and authorization middleware | 0.4 |
+| WBS-4.1 | Mohammed Alashi | Prepares venue seed data and the listing endpoint | 0.4 |
+| WBS-7.1 | İbrahim Meral | Integrates FCM and builds the notification sender | 0.4 |
+| WBS-3.2a | Erinç Özarı | Builds the profile screens using the style guide | 0.4 |
+| WBS-4.3a | Enes Durukan | Builds the home screen and the Add Activity flow | 0.4 |
+| WBS-5.3a | Erinç Özarı | Builds the feed, filters, post detail, and request inbox | 0.4 |
+| WBS-2.1 | Ali Çetin | Implements the registration and verification endpoints | 0.4 |
+| WBS-4.2 | İbrahim Meral | Implements post endpoints, validation, and the end-of-day job | 0.4 |
+| WBS-5.1 | Mohammed Alashi | Designs and implements the feed query and filters | 0.4 |
+| WBS-6.2a | Enes Durukan | Builds the chat screen with mock messages | 0.4 |
+| WBS-7.2 | Enes Durukan | Implements notification handling on the device | 0.4 |
+| WBS-8.2a | Erinç Özarı | Builds the safety actions and admin screens | 0.4 |
+| WBS-3.1 | Ali Çetin | Implements the profile endpoints and their tests | 0.4 |
+| WBS-5.2 | Mohammed Alashi | Implements join requests, match states, and post closing | 0.4 |
+| WBS-2.3b | Enes Durukan | Connects the screens to the API and stores tokens | 0.4 |
+| WBS-12.3 | Mohammed Alashi | Writes the architecture and API design | 0.1 |
+| WBS-12.3 | Ali Çetin | Writes the deployment design | 0.1 |
+| WBS-3.2b | Erinç Özarı | Connects the profile screens to the API | 0.4 |
+| WBS-8.1 | Ali Çetin | Implements block, report, and suspension logic | 0.4 |
+| WBS-4.3b | Enes Durukan | Connects the Add Activity flow to the post API | 0.4 |
+| WBS-5.3b | Erinç Özarı | Connects the feed and request screens to the APIs | 0.4 |
+| WBS-6.1 | İbrahim Meral | Implements the WebSocket service and persistence | 0.4 |
+| WBS-6.1 | Mohammed Alashi | Connects chat access rules to join requests and matches | 0.4 |
+| WBS-6.2b | Enes Durukan | Builds the WebSocket client and reconnect handling | 0.4 |
+| WBS-8.2b | Erinç Özarı | Connects the moderation screens to the API | 0.4 |
+| WBS-10.2b | İbrahim Meral | Runs and completes the integration and end-to-end tests | 0.4 |
+| WBS-12.4 | İbrahim Meral | Writes the test plan and test cases | 0.1 |
+| WBS-12.4 | Ali Çetin | Documents CI and test environments | 0.1 |
+| WBS-10.3 | İbrahim Meral | Runs security checks and tracks defects | 0.2 |
+| WBS-10.3 | Mohammed Alashi | Fixes backend defects and runs load tests | 0.2 |
+| WBS-10.3 | Ali Çetin | Fixes authentication and deployment defects | 0.2 |
+| WBS-10.3 | Enes Durukan | Fixes mobile defects | 0.2 |
+| WBS-10.3 | Erinç Özarı | Fixes UI defects and checks usability | 0.2 |
+| WBS-11.3 | Ali Çetin | Deploys the final version and publishes the release | 0.4 |
+| WBS-12.5 | Enes Durukan | Compiles the AI usage report and presentation | 0.1 |
+| WBS-12.5 | Erinç Özarı | Prepares the demo scenario | 0.1 |
 
 **Development workload per member:**
 
