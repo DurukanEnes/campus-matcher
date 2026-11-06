@@ -23,3 +23,6 @@ dist/
 Thumbs.db
 .vscode/
 .idea/
+
+# Generated test coverage reports
+coverage/
