@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f7f2">
+    <title>CampusMatcher</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #17251f;
+        background: #f6f7f2;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --green: #176b4b;
+        --muted: #64736b;
+        --line: #e2e8e2;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; }
+      button, input, select, textarea { font: inherit; }
+      button { cursor: pointer; }
+      .shell { max-width: 760px; margin: 0 auto; padding: 28px 20px 52px; }
+      header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .brand { display: flex; align-items: center; gap: 11px; }
+      .mark {
+        display: grid; width: 42px; height: 42px; place-items: center;
+        border-radius: 14px; background: #dceee4; color: var(--green); font-weight: 800;
+      }
+      h1 { margin: 0; font-size: 19px; letter-spacing: -0.03em; }
+      .subtitle { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+      .demo { border: 1px solid #d6e5d9; border-radius: 999px; padding: 7px 11px; color: var(--green); font-size: 12px; font-weight: 650; }
+      .hero { padding: 46px 0 28px; }
+      .eyebrow { color: var(--green); font-size: 12px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+      .hero h2 { max-width: 580px; margin: 10px 0; font-size: clamp(32px, 8vw, 52px); line-height: 1.05; letter-spacing: -.055em; }
+      .hero p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.6; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, .82fr); gap: 18px; align-items: start; }
+      .panel { border: 1px solid var(--line); border-radius: 18px; background: #fff; padding: 20px; box-shadow: 0 8px 26px #14271a0a; }
+      .panel h3 { margin: 0 0 16px; font-size: 17px; }
+      label { display: block; margin: 13px 0 6px; font-size: 12px; font-weight: 700; }
+      input, select, textarea { width: 100%; border: 1px solid #dce4dc; border-radius: 10px; padding: 11px 12px; color: inherit; background: #fff; }
+      textarea { min-height: 74px; resize: vertical; }
+      input:focus, select:focus, textarea:focus, button:focus-visible { outline: 3px solid #9ed5b5; outline-offset: 2px; }
+      .primary { width: 100%; margin-top: 16px; border: 0; border-radius: 10px; padding: 12px 14px; color: #fff; background: var(--green); font-weight: 700; }
+      .primary:hover { background: #10583d; }
+      .feed-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+      .feed-heading h3 { margin-bottom: 12px; }
+      .feed-heading span { color: var(--muted); font-size: 12px; }
+      .cards { display: grid; gap: 10px; }
+      .activity { border: 1px solid var(--line); border-radius: 13px; padding: 14px; }
+      .activity-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+      .activity strong { font-size: 14px; }
+      .category { border-radius: 999px; padding: 5px 8px; background: #edf5ef; color: var(--green); font-size: 11px; font-weight: 700; }
+      .venue, .time, .note { margin: 9px 0 0; font-size: 13px; }
+      .venue { color: #24352c; font-weight: 600; }
+      .time, .note { color: var(--muted); }
+      .empty, .error { margin: 0; padding: 20px 8px; color: var(--muted); text-align: center; font-size: 13px; }
+      .error { color: #a52c2c; }
+      .footnote { margin: 18px 2px 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+      @media (max-width: 620px) {
+        .shell { padding: 20px 15px 36px; }
+        .hero { padding: 36px 0 23px; }
+        .layout { grid-template-columns: 1fr; }
+        .panel { padding: 17px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <div class="brand">
+          <div class="mark" aria-hidden="true">C</div>
+          <div>
+            <h1>CampusMatcher</h1>
+            <p class="subtitle">Make campus time better together.</p>
+          </div>
+        </div>
+        <span class="demo">LOCAL DEMO</span>
+      </header>
+
+      <section class="hero" aria-labelledby="welcome-title">
+        <span class="eyebrow">Your campus, together</span>
+        <h2 id="welcome-title">Find a buddy for what you’re doing.</h2>
+        <p>Share a study session, a gym visit, or a meal. Pick a place and time, then meet up.</p>
+      </section>
+
+      <div class="layout">
+        <section class="panel" aria-labelledby="create-title">
+          <h3 id="create-title">Add an activity</h3>
+          <form id="activity-form">
+            <label for="activity">Activity</label>
+            <select id="activity" name="activity" required>
+              <option>Library</option>
+              <option>Gym</option>
+              <option>Cafeteria</option>
+            </select>
+
+            <label for="venue">Campus venue</label>
+            <input id="venue" name="venue" placeholder="e.g. Mustafa İnan Library" maxlength="100" required>
+
+            <label for="time-window">When</label>
+            <input id="time-window" name="time_window" placeholder="e.g. Today, 18:00–20:00" maxlength="100" required>
+
+            <label for="note">Note <span class="subtitle">(optional)</span></label>
+            <textarea id="note" name="note" placeholder="What are you planning to do?" maxlength="280"></textarea>
+
+            <button class="primary" type="submit">Publish activity</button>
+            <p id="form-message" class="footnote" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="panel" aria-labelledby="feed-title">
+          <div class="feed-heading">
+            <h3 id="feed-title">Join an activity</h3>
+            <span id="activity-count"></span>
+          </div>
+          <div id="activity-list" class="cards" aria-live="polite"></div>
+        </section>
+      </div>
+
+      <p class="footnote">This starter is a local demo: activities are kept in memory and reset when the server restarts. It does not include accounts, matching, or real-time chat yet. Campus venues are entered as text; this app does not use GPS.</p>
+    </main>
+
+    <script>
+      const activityList = document.querySelector("#activity-list");
+      const activityCount = document.querySelector("#activity-count");
+      const form = document.querySelector("#activity-form");
+      const formMessage = document.querySelector("#form-message");
+
+      function addTextElement(parent, tag, className, text) {
+        const element = document.createElement(tag);
+        element.className = className;
+        element.textContent = text;
+        parent.append(element);
+      }
+
+      async function loadActivities() {
+        activityList.replaceChildren();
+        try {
+          const response = await fetch("/api/activities");
+          if (!response.ok) throw new Error("Could not load activities.");
+          const activities = await response.json();
+          activityCount.textContent = `${activities.length} ${activities.length === 1 ? "post" : "posts"}`;
+          if (activities.length === 0) {
+            addTextElement(activityList, "p", "empty", "No activities yet. Be the first to post one.");
+            return;
+          }
+          for (const activity of activities) {
+            const card = document.createElement("article");
+            card.className = "activity";
+            const top = document.createElement("div");
+            top.className = "activity-top";
+            addTextElement(top, "strong", "", activity.activity);
+            addTextElement(top, "span", "category", "OPEN");
+            card.append(top);
+            addTextElement(card, "p", "venue", activity.venue);
+            addTextElement(card, "p", "time", activity.time_window);
+            if (activity.note) addTextElement(card, "p", "note", activity.note);
+            activityList.append(card);
+          }
+        } catch {
+          activityCount.textContent = "";
+          addTextElement(activityList, "p", "error", "Could not load activities. Refresh the page to try again.");
+        }
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        formMessage.textContent = "";
+        const button = form.querySelector("button");
+        button.disabled = true;
+        try {
+          const response = await fetch("/api/activities", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(Object.fromEntries(new FormData(form))),
+          });
+          if (!response.ok) {
+            const result = await response.json();
+            throw new Error(result.detail?.[0]?.msg ?? "Could not publish activity.");
+          }
+          form.reset();
+          formMessage.textContent = "Your activity is now in the feed.";
+          await loadActivities();
+        } catch (error) {
+          formMessage.textContent = error instanceof Error ? error.message : "Could not publish activity.";
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      loadActivities();
+    </script>
+  </body>
+</html>
