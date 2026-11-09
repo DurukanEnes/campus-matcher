@@ -22,9 +22,23 @@
     "typescript": "~6.0.3"
   },
   "jest": {
-  "preset": "jest-expo",
-  "roots": ["<rootDir>/../tests/unit/mobile"],
-  "modulePaths": ["<rootDir>/node_modules"]
+    "preset": "jest-expo",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/../tests/unit/mobile"
+    ],
+    "modulePaths": [
+      "<rootDir>/node_modules"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "coverageDirectory": "../coverage/mobile",
+    "coverageReporters": [
+      "text",
+      "lcov"
+    ]
   },
   "scripts": {
     "start": "expo start",
