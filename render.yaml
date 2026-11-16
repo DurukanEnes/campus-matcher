@@ -1,0 +1,29 @@
+# WBS-11.2 — Staging environment on Render (free tier)
+# Render builds the Dockerfile and deploys every commit on main
+# after the GitHub Actions checks pass.
+# Secrets (DATABASE_URL, later JWT_SECRET) are set in the Render dashboard,
+# never in this file.
+
+services:
+  - type: web
+    name: campusmatcher-api-staging
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    # Only redeploy when backend files change, not for mobile or docs PRs.
+    buildFilter:
+      paths:
+        - app/**
+        - requirements.txt
+        - Dockerfile
+        - .dockerignore
+    envVars:
+      - key: ENVIRONMENT
+        value: staging
+      - key: DATABASE_URL
+        sync: false

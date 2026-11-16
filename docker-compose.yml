@@ -1,0 +1,37 @@
+# WBS-11.2 — Local development environment
+#   docker compose up --build
+#   API:      http://localhost:8000/health
+#   Database: postgresql://campusmatcher:campusmatcher@localhost:5432/campusmatcher
+#
+# Staging and production use Neon PostgreSQL instead of the db service below.
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      ENVIRONMENT: local
+      DATABASE_URL: postgresql://campusmatcher:campusmatcher@db:5432/campusmatcher
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: campusmatcher
+      POSTGRES_PASSWORD: campusmatcher
+      POSTGRES_DB: campusmatcher
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campusmatcher -d campusmatcher"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
