@@ -1,0 +1,31 @@
+# Only the backend (app/ and requirements.txt) goes into the image.
+.git
+.github
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+render.yaml
+
+mobile/
+docs/
+tests/
+README.md
+
+# Python caches and virtual environments
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets must never be baked into the image
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
