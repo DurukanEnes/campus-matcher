@@ -28,14 +28,23 @@ export type JoinRequest = {
   direction: "incoming" | "outgoing";
 };
 
+export type Profile = {
+  name: string;
+  department: string;
+  interests: string;
+  activityPreferences: ActivityCategory[];
+};
+
 type NewActivity = Omit<Activity, "id" | "host" | "initials" | "status">;
 
 type PrototypeState = {
   activities: Activity[];
   requests: JoinRequest[];
+  profile: Profile;
   addActivity: (activity: NewActivity) => void;
   sendRequest: (activityId: string, message: string) => void;
   updateRequest: (requestId: string, status: Exclude<RequestStatus, "pending">) => void;
+  updateProfile: (profile: Profile) => void;
 };
 
 const initialActivities: Activity[] = [
@@ -89,17 +98,26 @@ const initialRequests: JoinRequest[] = [
   },
 ];
 
+const initialProfile: Profile = {
+  name: "Erinç Özarı",
+  department: "Architecture",
+  interests: "Design, study sessions, coffee",
+  activityPreferences: ["Library", "Cafeteria"],
+};
+
 const PrototypeContext = createContext<PrototypeState | null>(null);
 
 export function PrototypeProvider({ children }: PropsWithChildren) {
   const [activities, setActivities] = useState(initialActivities);
   const [requests, setRequests] = useState(initialRequests);
+  const [profile, setProfile] = useState(initialProfile);
   const nextId = useRef(1);
 
   const value = useMemo<PrototypeState>(
     () => ({
       activities,
       requests,
+      profile,
       addActivity: (activity) => {
         const id = `activity-new-${nextId.current++}`;
         setActivities((current) => [
@@ -147,8 +165,9 @@ export function PrototypeProvider({ children }: PropsWithChildren) {
           }
         }
       },
+      updateProfile: (nextProfile) => setProfile(nextProfile),
     }),
-    [activities, requests],
+    [activities, profile, requests],
   );
 
   return <PrototypeContext.Provider value={value}>{children}</PrototypeContext.Provider>;
