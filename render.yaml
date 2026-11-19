@@ -27,3 +27,6 @@ services:
         value: staging
       - key: DATABASE_URL
         sync: false
+      # Firebase service-account JSON (FCM push notifications); set in the dashboard.
+      - key: FIREBASE_CREDENTIALS_JSON
+        sync: false
