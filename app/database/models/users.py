@@ -1,16 +1,16 @@
 from datetime import datetime
-from sqlalchemy import ForeignKey
-from sqlalchemy.dialects.postgresql import JSONB
 
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
+    ForeignKey,
     Integer,
     String,
     Text,
     func,
     text,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base

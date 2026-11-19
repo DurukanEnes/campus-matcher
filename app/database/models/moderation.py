@@ -10,10 +10,10 @@ from sqlalchemy import (
     func,
     text,
 )
-
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
+
 
 class Block(Base):
     __tablename__ = "blocks"

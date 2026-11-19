@@ -1,16 +1,13 @@
 
-from logging.config import fileConfig
 import os
+from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-from alembic import context
 from dotenv import load_dotenv
+from sqlalchemy import engine_from_config, pool
 
+import app.database.models  # noqa: F401
+from alembic import context
 from app.database.base import Base
-import app.database.models
-
 
 # Load environment variables from .env
 load_dotenv()
