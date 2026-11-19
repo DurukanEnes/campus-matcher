@@ -4,31 +4,40 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { Avatar, Button, Card, Chip, Page, PageHeader, SectionTitle, Tag, Field } from "../components/DesignSystem";
 import type { RootStackParamList } from "../navigation/types";
+import { usePrototypeData } from "../prototype/PrototypeData";
+import type { ActivityCategory } from "../prototype/PrototypeData";
 import { colors, radii, spacing, typography } from "../theme/tokens";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
+const activityOptions: ActivityCategory[] = ["Library", "Gym", "Cafeteria"];
 
 export function ProfileScreen() {
   const navigation = useNavigation<Navigation>();
+  const { profile } = usePrototypeData();
+  const interests = profile.interests.split(",").map((interest) => interest.trim()).filter(Boolean);
   return (
     <Page activeTab="Profile" onTabSelect={(tab) => navigation.navigate(tab)}>
       <PageHeader title="Your corner" subtitle="A little about you" />
       <Card style={styles.profileCard}>
-        <Avatar initials="EO" size={68} />
-        <Text style={styles.name}>Erinç Özarı</Text>
-        <Text style={styles.faculty}>Architecture · İTÜ member</Text>
+        <Avatar initials={getInitials(profile.name)} size={68} />
+        <Text style={styles.name}>{profile.name}</Text>
+        <Text style={styles.faculty}>{profile.department} · İTÜ member</Text>
         <Button label="Edit profile" variant="secondary" onPress={() => navigation.navigate("EditProfile")} />
       </Card>
       <SectionTitle title="Things you’re into" />
       <View style={styles.chips}>
-        <Tag label="DESIGN" tone="lavender" />
-        <Tag label="STUDY SESSIONS" />
-        <Tag label="COFFEE" tone="peach" />
+        {interests.length > 0
+          ? interests.map((interest) => <Tag key={interest} label={interest.toUpperCase()} />)
+          : <Text style={styles.preferenceText}>No interests added</Text>}
       </View>
       <SectionTitle title="Your preferences" />
       <Card style={styles.preferenceCard}>
         <Text style={styles.preferenceTitle}>Activities I like</Text>
-        <Text style={styles.preferenceText}>Library · Cafeteria</Text>
+        <Text style={styles.preferenceText}>
+          {profile.activityPreferences.length > 0
+            ? profile.activityPreferences.join(" · ")
+            : "No activities selected"}
+        </Text>
         <View style={styles.divider} />
         <Text style={styles.preferenceTitle}>Campus location</Text>
         <Text style={styles.preferenceText}>Ayazağa · chosen venues only</Text>
@@ -46,26 +55,66 @@ export function ProfileScreen() {
 
 export function EditProfileScreen() {
   const navigation = useNavigation<Navigation>();
-  const [name, setName] = useState("Erinç Özarı");
-  const [department, setDepartment] = useState("Architecture");
-  const [interest, setInterest] = useState("Design, coffee, study sessions");
+  const { profile, updateProfile } = usePrototypeData();
+  const [name, setName] = useState(profile.name);
+  const [department, setDepartment] = useState(profile.department);
+  const [interest, setInterest] = useState(profile.interests);
+  const [activityPreferences, setActivityPreferences] = useState(profile.activityPreferences);
+  const cancelEdit = () => {
+    setName(profile.name);
+    setDepartment(profile.department);
+    setInterest(profile.interests);
+    setActivityPreferences(profile.activityPreferences);
+    navigation.goBack();
+  };
+  const saveEdit = () => {
+    updateProfile({
+      name,
+      department,
+      interests: interest,
+      activityPreferences: activityOptions.filter((option) => activityPreferences.includes(option)),
+    });
+    Alert.alert("Saved for preview", "Profile changes are temporary in this prototype.");
+    navigation.goBack();
+  };
   return (
     <Page showTabs={false}>
-      <PageHeader title="Edit your profile" subtitle="Make your intro feel like you" onBack={() => navigation.goBack()} />
+      <PageHeader title="Edit your profile" subtitle="Make your intro feel like you" onBack={cancelEdit} />
       <Field label="Name" value={name} onChangeText={setName} placeholder="Your name" />
       <Field label="Faculty or department" value={department} onChangeText={setDepartment} placeholder="Your department" />
       <Field label="Interests" value={interest} onChangeText={setInterest} placeholder="Add a few interests" multiline />
       <SectionTitle title="Activity preferences" />
       <View style={styles.chips}>
-        <Chip label="Library" selected onPress={() => undefined} />
-        <Chip label="Gym" onPress={() => undefined} />
-        <Chip label="Cafeteria" selected onPress={() => undefined} />
+        {activityOptions.map((option) => (
+          <Chip
+            key={option}
+            label={option}
+            selected={activityPreferences.includes(option)}
+            onPress={() =>
+              setActivityPreferences((current) =>
+                current.includes(option)
+                  ? current.filter((preference) => preference !== option)
+                  : [...current, option],
+              )
+            }
+          />
+        ))}
       </View>
       <View style={styles.saveButton}>
-        <Button label="Save preview" onPress={() => { Alert.alert("Saved for preview", "Profile changes are temporary in this prototype."); navigation.goBack(); }} />
+        <Button label="Save preview" onPress={saveEdit} />
       </View>
     </Page>
   );
+}
+
+function getInitials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 }
 
 export function SafetyScreen() {
