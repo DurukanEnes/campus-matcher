@@ -33,9 +33,9 @@ function PrototypeHarness() {
 test("publishing an activity adds it to the shared prototype feed", async () => {
   await render(<PrototypeProvider><PrototypeHarness /></PrototypeProvider>);
 
-  expect(screen.getByTestId("activity-count").props.children).toBe(3);
+  expect(screen.getByTestId("activity-count").props.children).toBe(5);
   await fireEvent.press(screen.getByText("Add activity"));
-  expect(screen.getByTestId("activity-count").props.children).toBe(4);
+  expect(screen.getByTestId("activity-count").props.children).toBe(6);
 });
 
 test("accepting a request marks its activity as matched", async () => {

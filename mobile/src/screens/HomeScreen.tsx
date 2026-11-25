@@ -127,7 +127,7 @@ export default function HomeScreen() {
           <Text style={styles.requestTitle}>Someone wants to join</Text>
           <Text style={styles.requestCopy}>
             {pendingRequests
-              ? `${pendingRequests} request waiting for you`
+              ? `${pendingRequests} ${pendingRequests === 1 ? "request" : "requests"} waiting for you`
               : "You’re all caught up for now"}
           </Text>
         </View>
