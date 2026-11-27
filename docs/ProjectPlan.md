@@ -11,8 +11,8 @@
 | **Group members** | Enes Durukan — 150230100, Erinç Özarı — 150190060, Mohammed Alashi — 150240935, Ali Çetin — 150190741, İbrahim Meral — 150220101 |
 | **Instructor** | Prof. Dr. Tolga Ovatman, Assoc. Prof. Dr. Ayşe Tosun |
 | **Submission date** | 2026-10-20 |
-| **Document version** | 1.3 |
-| **Revision** | 1.3 (2026-11-05): schedule network revised after the customer review: test-first setup and style guide added as predecessors, API contract defined with the database schema (WBS-1.2), staging and feed dependencies completed, documentation chain added to the network. 1.2 (2026-11-02): Section 4.2 table format updated. 1.1 (2026-10-29): schedule re-levelled after customer feedback (all dependencies shown, mobile tasks split into UI and integration, no parallel development tasks per member), app opened to all İTÜ members, end-of-day deletion of activities and chats, AI agents reduced to two. |
+| **Document version** | 1.4 |
+| **Revision** | 1.4 (2026-11-27): the customer requests from the review of the Requirements Specification (PR #11, issue #20) are added as six activities (WBS-2.4, WBS-2.5, WBS-4.4, WBS-5.4, WBS-8.3, WBS-8.4); WBS-10.3 runs at 0.4 FTE per member, and the release moves to 2026-12-21. 1.3 (2026-11-05): schedule network revised after the customer review: test-first setup and style guide added as predecessors, API contract defined with the database schema (WBS-1.2), staging and feed dependencies completed, documentation chain added to the network. 1.2 (2026-11-02): Section 4.2 table format updated. 1.1 (2026-10-29): schedule re-levelled after customer feedback (all dependencies shown, mobile tasks split into UI and integration, no parallel development tasks per member), app opened to all İTÜ members, end-of-day deletion of activities and chats, AI agents reduced to two. |
 
 ---
 
@@ -24,17 +24,17 @@
 Members of Istanbul Technical University (İTÜ), both students and staff, often skip campus activities such as studying at the library, working out at the gym, or eating at the cafeteria because they have no one to go with. CampusMatcher is a mobile application (Android and iOS) developed specifically for the İTÜ community to solve this problem. Only users with a verified İTÜ e-mail address (`@itu.edu.tr`), students or staff, can register, and the venue list contains İTÜ campus locations (e.g., the Mustafa İnan Library, campus gyms, and cafeterias). The application has two main actions on its home screen. With **Add Activity**, a user publishes an activity post with an activity category, a campus venue chosen from a predefined list, a planned date, and a time window (e.g., *Library, 30 October, 19:00–23:00*). With **Join Activity**, a user browses a social-media-style feed of all active posts, filters it by activity and hour, opens a post to see its details, and sends the post owner a join request with a message. When the owner accepts the request, the two users are matched: the post is closed and no longer shown in the feed, and they agree on the exact meeting point in the chat that belongs to the activity. At the end of each day, all activities planned for that day are deleted automatically together with their chats; activities planned for later days are kept (e.g., at the end of 30 October, a post for 3 November created on 30 October stays). The application has no swipe-based matching and no friend system; a match belongs to a single post only. System administrators moderate the platform by reviewing user reports and suspending accounts.
 
 **In scope:**
-- User registration restricted to verified İTÜ e-mail addresses (`@itu.edu.tr`) of students and staff, login, and token-based sessions.
+- User registration restricted to verified İTÜ e-mail addresses (`@itu.edu.tr`) of students and staff, login, token-based sessions, password reset, account deletion, and limits on verification codes and login attempts.
 - Role-based authorization for members (students and staff) and administrators.
 - User profile management (profile information, faculty/department, interests, activity preferences).
 - Home screen with the two main actions: Add Activity and Join Activity.
 - Activity posts (Add Activity): creating, editing, and deleting posts with an activity category, a campus venue selected from a predefined list, a planned date, a time window, and an optional short note.
 - Activity feed (Join Activity): a feed of all open posts of other users with their details, filterable by activity category and hour (and venue).
-- Join requests and matching: a user sends a join request with a message to the post owner; the owner accepts or declines it. An accepted request is a match, and the matched post is closed and no longer shown in the feed.
+- Join requests and matching: a user sends a join request with a message to the post owner; the owner accepts or declines it. An accepted request is a match, and the matched post is closed and no longer shown in the feed. A requester can withdraw a pending request, and either user can cancel a match before the activity starts, which opens the post again.
 - Text-based in-app messaging between the post owner and the requesting user; the chat belongs to the activity, and the exact meeting point is agreed in it.
-- End-of-day deletion: every day at 23:59, all activities planned for that day are deleted automatically together with their join requests and chats; activities planned for later days are kept.
-- Push notifications for new join requests, request responses, and new messages.
-- Safety and moderation: blocking and reporting users, and admin-only screens to review reports and suspend accounts.
+- End-of-day deletion: every day at 23:59, all activities planned for that day are deleted automatically together with their join requests and chats, also a chat that is still in use, so a time window cannot cross midnight; activities planned for later days are kept. The only exception is the evidence of an open report, which is kept until the report is handled, at most 7 days.
+- Push notifications for new join requests, request responses, cancelled matches, and new messages.
+- Safety and moderation: blocking, unblocking, and reporting users (a block also ends the existing requests, matches, and chats between the two users), and admin-only screens to review reports and suspend accounts for 1 day, 7 days, or permanently. The first administrator is created by the team at deployment.
 - A service-based backend offering a REST API, hosted on a cloud platform with a relational database, with a CI/CD pipeline.
 
 **Optional scope:**
@@ -44,7 +44,7 @@ Members of Istanbul Technical University (İTÜ), both students and staff, often
 **Out of scope:**
 - GPS and device location services, including real-time location tracking, live location sharing, map views, and distance-based matching.
 - A friend system (friend requests, adding or removing friends, friend lists) or any other persistent social connection between users.
-- Keeping activities or chats after the end of their planned day (no activity or chat history).
+- Keeping activities or chats after the end of their planned day (no activity or chat history), except the evidence of an open report described above.
 - Dating or romantic matching features.
 - Voice and video calling.
 - Integration with official university systems (student information system, campus card, facility reservation systems).
@@ -55,7 +55,7 @@ Members of Istanbul Technical University (İTÜ), both students and staff, often
 
 **Assumptions and constraints:**
 - **Team:** Five members. One man-week is defined as 40 hours. Each member is available about 20 hours per week (0.5 FTE): at most 0.4 FTE for development activities and 0.1 FTE for documentation and meetings.
-- **Time:** Development runs from 2026-10-29 to 2026-12-20. The code freeze is on 2026-12-25 (release `v1.0.0` on `main`), the final demo is on 2026-12-26, and the final presentation is in the week of 2026-12-28. Document deadlines are fixed by the course schedule. The midterm exam (week of 2026-11-23) and other courses reduce availability around that time.
+- **Time:** Development runs from 2026-10-29 to 2026-12-21. The code freeze is on 2026-12-25 (release `v1.0.0` on `main`), the final demo is on 2026-12-26, and the final presentation is in the week of 2026-12-28. Document deadlines are fixed by the course schedule. The midterm exam (week of 2026-11-23) and other courses reduce availability around that time.
 - **Budget:** There is no budget. Only free tiers are used: Neon PostgreSQL, a free cloud hosting tier (Render or Azure for Students), Firebase Cloud Messaging, and Expo.
 - **Technology:** Python/FastAPI backend, React Native (Expo) mobile application, PostgreSQL database, JWT authentication, GitHub Actions for CI/CD.
 - **Process:** All work is tracked as GitHub issues on the project board. Nobody commits directly to `main`; every change goes through a pull request with at least one approval. A test-first approach is followed.
@@ -79,13 +79,13 @@ Members of Istanbul Technical University (İTÜ), both students and staff, often
 | Task ID | Functional requirement / task | Description | Related deliverable ID(s) |
 |---|---|---|---|
 | T-01 | System foundation | Backend and mobile project scaffolds and the database schema that all features build on. | D-01, D-02, D-03 |
-| T-02 | Registration, authentication, and authorization | İTÜ members (students and staff) register with a verified `@itu.edu.tr` e-mail address and log in; the system issues tokens and restricts endpoints by role (member, admin). | D-01, D-02, D-03 |
-| T-03 | Profile management | Users view and update their profile information, faculty/department, interests, and activity preferences. | D-01, D-02 |
+| T-02 | Registration, authentication, and authorization | İTÜ members (students and staff) register with a verified `@itu.edu.tr` e-mail address, log in, and reset a forgotten password; the system limits verification codes and login attempts, issues tokens, and restricts endpoints by role (member, admin). | D-01, D-02, D-03 |
+| T-03 | Profile management | Users view and update their profile information, faculty/department, interests, and activity preferences, and can delete their account. | D-01, D-02 |
 | T-04 | Activity posts (Add Activity) | Users publish, edit, and delete activity posts with a category, a campus venue from the predefined list, a planned date, and a time window; at the end of each day, the activities planned for that day are deleted automatically. | D-01, D-02, D-03 |
-| T-05 | Activity feed and join requests (Join Activity) | Users browse and filter the feed of open posts and send join requests; post owners accept or decline them. An accepted request is a match, and the matched post is closed and no longer shown in the feed. | D-01, D-02 |
-| T-06 | In-app messaging | The post owner and the requesting user chat in real time, starting with the join request message, to agree on the exact meeting point; the chat belongs to the activity and is deleted with it at the end of its planned day. | D-01, D-02 |
-| T-07 | Push notifications | Users receive notifications for new join requests, request responses, and new messages. | D-01, D-02 |
-| T-08 | Safety and moderation | Users block and report other users; administrators review reports and suspend accounts. | D-01, D-02 |
+| T-05 | Activity feed and join requests (Join Activity) | Users browse and filter the feed of open posts and send join requests; post owners accept or decline them. An accepted request is a match, and the matched post is closed and no longer shown in the feed. Requesters can withdraw a pending request, and either user can cancel a match before the activity starts. | D-01, D-02 |
+| T-06 | In-app messaging | The post owner and the requesting user chat in real time, starting with the join request message, to agree on the exact meeting point; the chat belongs to the activity and is deleted with it at the end of its planned day, even if it is still in use. | D-01, D-02 |
+| T-07 | Push notifications | Users receive notifications for new join requests, request responses, cancelled matches, and new messages. | D-01, D-02 |
+| T-08 | Safety and moderation | Users block, unblock, and report other users; administrators review reports with their saved evidence and suspend accounts for a set duration. | D-01, D-02 |
 | T-09 | UI/UX design | Wireframes, prototype, and style guide for all screens. | D-06, D-01 |
 | T-10 | Testing and quality assurance | Test strategy, test-first setup, integration, end-to-end, performance, and security testing. | D-05 |
 | T-11 | CI/CD and deployment | Continuous integration, containerization, staging and production deployment, and the final release. | D-04 |
@@ -95,11 +95,11 @@ Members of Istanbul Technical University (İTÜ), both students and staff, often
 
 | Quality attribute | Requirement / concern | How it will be assessed |
 |---|---|---|
-| Security | Only verified İTÜ e-mail addresses (`@itu.edu.tr`) of students and staff can register. Passwords are stored hashed (bcrypt); all traffic uses HTTPS; JWT access tokens expire; admin endpoints are restricted by role; users can only read the chats of activities they take part in. | Automated authorization tests (missing, expired, and wrong-role tokens), input validation tests, and a security checklist review in WBS-10.3. |
+| Security | Only verified İTÜ e-mail addresses (`@itu.edu.tr`) of students and staff can register. Passwords are stored hashed (bcrypt); all traffic uses HTTPS; JWT access tokens expire; admin endpoints are restricted by role; users can only read the chats of activities they take part in; repeated failed logins lock the login for 15 minutes, and request rates are limited. | Automated authorization tests (missing, expired, and wrong-role tokens), input validation tests, and a security checklist review in WBS-10.3. |
 | Performance | API responses within 500 ms (95th percentile) with 100 concurrent users; the feed loads and applies filters within 1 second with 500 active posts; chat messages are delivered within 2 seconds. | Load tests on the staging environment (e.g., Locust) and timing assertions in integration tests (WBS-10.3). |
 | Usability | A user can publish an activity post in under 30 seconds and in at most two screens, and can find a suitable post in the feed with at most two filter selections. The interface follows a consistent style guide with readable text and sufficient color contrast. | Usability test with at least five İTÜ members using the prototype (WBS-9.2) and the final application (WBS-10.3). |
 | Reliability | The service is available during the demo; the chat reconnects automatically after a network loss; the end-of-day deletion runs on time even after a server restart. | End-to-end tests (WBS-10.2b), reconnect tests, and monitoring of the staging environment. |
-| Privacy | No GPS or device location is collected; only the selected campus venue is stored. Blocked users cannot see or contact the blocking user. Only necessary personal data is stored, and activities and chats are deleted at the end of their planned day, so no activity or chat history is kept. | Data-model review in the Design Specification, and moderation and deletion tests in WBS-10.2b. |
+| Privacy | No GPS or device location is collected; only the selected campus venue is stored. Blocked users cannot see or contact the blocking user. Only necessary personal data is stored, and activities and chats are deleted at the end of their planned day, so no activity or chat history is kept; only the evidence of an open report is kept, at most 7 days. | Data-model review in the Design Specification, and moderation and deletion tests in WBS-10.2b. |
 | Maintainability | Every change is reviewed in a pull request; backend test coverage is at least 70%; code follows a shared lint configuration. | CI coverage report and lint checks on every pull request. |
 
 ---
@@ -119,6 +119,8 @@ Each task in Section 1.3 is broken down into subtasks. Sizes use the five-level 
 | WBS-2.2 | T-02 | Login, JWT sessions, and RBAC | Login endpoint, access/refresh tokens, and role-based authorization middleware (member, admin). Built first so that all other services can use the same authorization check. Done when protected endpoints reject missing, expired, or wrong-role tokens in tests. | M |
 | WBS-2.3a | T-02 | Authentication screens (UI) | Register, verify-code, and login screens with form validation, built with mock data that follows the API contract (WBS-1.2). Done when the screens pass their component tests. | S |
 | WBS-2.3b | T-02 | Authentication screens (integration) | Connects the screens to the registration and login API and stores tokens securely on the device. Done when a user can register, verify, and log in against the staging API. | S |
+| WBS-2.4 | T-02 | Account security extensions | Verification codes valid for 10 minutes and 5 attempts with limits on new codes, the password rule, password reset with an e-mail code, and rate limiting with a 15-minute login lock (customer request, issue #20). Done when every limit and the reset flow are covered by passing tests. | S |
+| WBS-2.5 | T-02 | Account and chat change screens | Forgot-password and reset screens, password-rule and code-limit messages, the login-lock message, the delete-account screen (T-03), and the "activity ended" state of the chat screen (T-06) (customer request, issue #20). Done when the screens work against the staging API and pass their component tests. | S |
 | WBS-3.1 | T-03 | Profile API | Endpoints to view and update profile information, faculty/department, interests, and activity preferences. Done when CRUD and validation tests pass. | S |
 | WBS-3.2a | T-03 | Profile screens (UI) | Profile view and edit screens with preference selection, built with mock data that follows the API contract (WBS-1.2). Done when the screens pass their component tests. | T |
 | WBS-3.2b | T-03 | Profile screens (integration) | Connects the profile screens to the profile API. Done when profile changes are saved and shown again after reopening the app. | T |
@@ -126,11 +128,13 @@ Each task in Section 1.3 is broken down into subtasks. Sizes use the five-level 
 | WBS-4.2 | T-04 | Activity post API and end-of-day deletion | Create, edit, and delete activity posts (category, venue, planned date, time window, optional short note) with validation of past and overlapping time windows, and an end-of-day job: every day at 23:59, all posts planned for that day are deleted together with their join requests and chats, while posts planned for later days are kept. Done when all post rules and the end-of-day job are covered by passing tests. | M |
 | WBS-4.3a | T-04 | Home and Add Activity screens (UI) | Home screen with the two main actions (Add Activity, Join Activity) and the Add Activity flow (category, venue, date, time window), built with mock data that follows the API contract (WBS-1.2). Done when the flow passes its component tests. | S |
 | WBS-4.3b | T-04 | Home and Add Activity screens (integration) | Connects the Add Activity flow to the post API and lists, edits, or deletes the user's own posts. Done when a post created in the app appears in the user's own post list and is returned by the feed API (WBS-5.1). | S |
+| WBS-4.4 | T-04 | Post rule and report retention changes | A time window must end by 23:59 of its planned date; a report saves a snapshot of its evidence, the end-of-day job keeps the snapshot and deletes it after 7 days (customer request, issue #20). Done when the new rules are covered by passing tests. | T |
 | WBS-5.1 | T-05 | Activity feed API | Endpoint that lists the open posts of other users, newest first, with filters for activity category, time (hour range), and venue, and with pagination; posts of blocked users are hidden. Done when filter and pagination tests pass. | M |
 | WBS-5.2 | T-05 | Join request and match API | A user sends a join request with a message to the post owner; the owner accepts or declines it. An accepted request is a match: the post is closed and no longer shown in the feed, and it is deleted with its chat by the end-of-day job (WBS-4.2). Done when every request state is tested. | M |
 | WBS-5.3a | T-05 | Join Activity feed screens (UI) | The main feed screen (social-media-style list of posts with their details), filter controls for activity and hour, the post detail screen with the join request message, and the owner's request inbox with accept/decline, built with mock data that follows the API contract (WBS-1.2). Done when all screens and states pass their component tests. | M |
 | WBS-5.3b | T-05 | Join Activity feed screens (integration) | Connects the feed, filters, join requests, and the request inbox to the feed and join request APIs. Done when a user can find a post with filters, send a request, and get accepted on the staging API. | M |
-| WBS-6.1 | T-06 | Real-time chat service | WebSocket chat between a post owner and a requesting user: the chat belongs to the activity, starts with the join request message, continues after the match, and is deleted together with the activity at the end of its planned day. Done when messages are delivered in real time in integration tests. | L |
+| WBS-5.4 | T-05 | Withdraw, cancel, and account deletion API | Withdraw a pending request, cancel a match before the time window starts (the post opens again and the chat becomes read-only), delete a closed post, delete an account, and the same cancellation when a member is blocked or suspended (customer request, issue #20). Done when every new request state and trigger is tested. | S |
+| WBS-6.1 | T-06 | Real-time chat service | WebSocket chat between a post owner and a requesting user: the chat belongs to the activity, starts with the join request message, continues after the match, and is deleted together with the activity at the end of its planned day, even if it is still in use; open chat screens are told that the activity has ended. Done when messages are delivered in real time in integration tests. | L |
 | WBS-6.2a | T-06 | Chat screen (UI) | Chat screen between the post owner and the requesting user, built with mock messages that follows the API contract (WBS-1.2). Done when the screen passes its component tests. | S |
 | WBS-6.2b | T-06 | Chat screen (integration) | WebSocket client with reconnect handling, connected to the chat service. Done when two devices exchange messages through the staging server. | S |
 | WBS-7.1 | T-07 | Push notification service | Firebase Cloud Messaging integration, device-token storage, and a notification sender; join requests, request responses, and messages call this sender when they are implemented (WBS-5.2, WBS-6.1). Done when a test notification reaches a registered device. | S |
@@ -138,6 +142,8 @@ Each task in Section 1.3 is broken down into subtasks. Sizes use the five-level 
 | WBS-8.1 | T-08 | Block, report, and suspension API | Blocking users (their posts are hidden from the feed and they cannot send requests or messages), reporting users or posts, and admin endpoints to review reports and suspend accounts. Done when blocked users can no longer see or contact the blocking user in tests. | M |
 | WBS-8.2a | T-08 | Moderation and safety screens (UI) | Block and report actions for users, plus admin-only screens to review reports and suspend accounts, built with mock data that follows the API contract (WBS-1.2). Done when the screens pass their component tests. | S |
 | WBS-8.2b | T-08 | Moderation and safety screens (integration) | Connects the safety actions and admin screens to the moderation API. Done when an admin can suspend a reported user from the app. | S |
+| WBS-8.3 | T-08 | Suspension and unblock extensions | Suspension for 1 day, 7 days, or permanently with an automatic end and early lifting, deletion of a suspended member's open posts and pending requests, the block list with unblock, and the server command that creates the first administrator (customer request, issue #20). Done when the new rules are covered by passing tests. | T |
+| WBS-8.4 | T-08 | Request and moderation change screens | Withdraw, cancel-match, and delete-closed-post actions in the feed and request screens (T-05), the block list with unblock, the suspension duration and lift actions, and the report snapshot in the admin screens (customer request, issue #20). Done when the actions work against the staging API and pass their component tests. | S |
 | WBS-9.1 | T-09 | Wireframes | Low-fidelity wireframes for all core screens and the main user flows. Done when the team reviews and approves the wireframes. | M |
 | WBS-9.2 | T-09 | Interactive prototype and style guide | Clickable prototype, color/typography style guide, icons and visual assets, and a reusable component list. Done when the prototype is shown to the customer and feedback is recorded. | M |
 | WBS-10.1 | T-10 | Test strategy and test-first setup | Test strategy, Pytest/Jest configuration, coverage reporting, and the rule that every PR includes tests. Done when coverage is reported on every PR. | S |
@@ -147,7 +153,7 @@ Each task in Section 1.3 is broken down into subtasks. Sizes use the five-level 
 | WBS-11.1 | T-11 | CI pipeline | GitHub Actions workflow running lint and tests on every pull request; branch protection on main. Done when a failing test blocks a PR. | S |
 | WBS-11.2 | T-11 | Containerization and staging deployment | Docker image for the backend, a staging environment on the cloud platform with Neon PostgreSQL, and automatic deployment from main. It is set up early, so every merged feature is deployed to staging. Done when the staging health-check endpoint is reachable by the mobile app. | M |
 | WBS-11.3 | T-11 | Production deployment and v1.0.0 release | Production configuration, final deployment, and the v1.0.0 release on main. Done when the release is published and the demo runs from it. | S |
-| WBS-12.1 | T-12 | Requirements Specification | User stories with acceptance criteria and use cases; released as `requirements-spec-v1.0` by 2026-11-02. | M |
+| WBS-12.1 | T-12 | Requirements Specification | User stories with acceptance criteria and use cases; released as `requirements-spec-v1.0` by 2026-11-02 and revised as `requirements-spec-v1.1` after the customer review (issue #20). | M |
 | WBS-12.2 | T-12 | Requirements Analysis | Data models, behavioral models, prototypes, and wireframes; released as `requirements-analysis-v1.0` by 2026-11-23. | M |
 | WBS-12.3 | T-12 | Design Specification | Architecture, final API contract (based on WBS-1.2), and database design; released as `design-spec-v1.0` by 2026-12-07. | M |
 | WBS-12.4 | T-12 | Test Specification | Test plan and test cases; released as `test-spec-v1.0` by 2026-12-21. | M |
@@ -165,6 +171,7 @@ Each task in Section 1.3 is broken down into subtasks. Sizes use the five-level 
 - **Login and RBAC (WBS-2.2)** is built before registration (WBS-2.1), so that every other service can use the same authorization check early.
 - **Test-first:** the test strategy and test tooling (WBS-10.1) come before the first development activity of every stream (WBS-1.2, WBS-11.2, WBS-2.3a), so every later activity is written test-first. The end-to-end scenarios (WBS-10.2a) are written early from the user stories, before the features exist; WBS-10.2b completes and runs them when all backend services are ready. An activity is complete only when its unit tests pass in CI.
 - **Resource dependencies:** no member works on two development activities at the same time. When the same member owns several activities, they are done one after another; where this delays an activity beyond its dependencies, the link is shown as a resource dependency (dashed arrow in the PERT chart).
+- **Customer requests from the Requirements Specification review (v1.4):** the TA's review of PR #11 added requirements (issue #20). Most of the activities they extend were already finished, so the new work is planned as six new activities: four backend activities (WBS-2.4, WBS-4.4, WBS-5.4, WBS-8.3) in the free time of their owners, and two mobile activities (WBS-2.5, WBS-8.4) after the integration activities. Because the backend parts are ready when the mobile activities start, each mobile activity covers both the UI and the integration, without a mock-data part.
 - **Documentation (WBS-12.x)** follows the fixed course deadlines and runs in parallel with development at 0.1 FTE. Each document builds on the previous one, and WBS-12.5 also needs the release (WBS-11.3), so the documentation chain is part of the schedule network.
 
 > **Course guideline note:** User stories for these subtasks will be written in the separate requirements document; this project plan defines and sizes the subtasks.
@@ -184,6 +191,8 @@ Effort is estimated for each WBS activity in **man-weeks** (1 man-week = 40 hour
 | WBS-2.2 | M | 0.4 | Security-sensitive; extra review and negative test cases are included. |
 | WBS-2.3a | S | 0.2 | Three screens with form validation; mock data removes the wait for the backend. |
 | WBS-2.3b | S | 0.2 | Error handling for real API responses and secure token storage. |
+| WBS-2.4 | S | 0.2 | Extends the existing verification and login code; the reset flow reuses the verification code. |
+| WBS-2.5 | S | 0.2 | Three small screens and new states on existing screens; the API is already on staging. |
 | WBS-3.1 | S | 0.2 | Simple CRUD on a single resource. |
 | WBS-3.2a | T | 0.1 | Two screens reusing shared UI components. |
 | WBS-3.2b | T | 0.1 | Single resource; small integration effort. |
@@ -191,10 +200,12 @@ Effort is estimated for each WBS activity in **man-weeks** (1 man-week = 40 hour
 | WBS-4.2 | M | 0.4 | Several business rules on time windows plus a scheduled job; test-first development. |
 | WBS-4.3a | S | 0.2 | Date/time pickers and venue selection add UI complexity. |
 | WBS-4.3b | S | 0.2 | Validation errors from the API must be shown in the form. |
+| WBS-4.4 | T | 0.1 | Small changes to the validation rules and the end-of-day job. |
 | WBS-5.1 | M | 0.4 | Query with several filters and indexes; developed test-first on fixture data. |
 | WBS-5.2 | M | 0.4 | State machine with several request states. |
 | WBS-5.3a | M | 0.4 | The main screen of the application with filters and several states; highest UI effort. |
 | WBS-5.3b | M | 0.4 | Pagination, filter parameters, and request states must match the API. |
+| WBS-5.4 | S | 0.2 | New request and match states on the existing state machine of WBS-5.2. |
 | WBS-6.1 | L | 0.8 | Real-time communication is new for the team; two developers in parallel. |
 | WBS-6.2a | S | 0.2 | Message list, input, and empty/closed states. |
 | WBS-6.2b | S | 0.2 | Real-time updates and reconnect handling. |
@@ -203,6 +214,8 @@ Effort is estimated for each WBS activity in **man-weeks** (1 man-week = 40 hour
 | WBS-8.1 | M | 0.4 | Builds on the RBAC middleware (WBS-2.2); feed, request, and chat rules call the shared block check. |
 | WBS-8.2a | S | 0.2 | Role-dependent screens inside the same mobile application. |
 | WBS-8.2b | S | 0.2 | Role checks must match the RBAC rules of the API. |
+| WBS-8.3 | T | 0.1 | Extends the suspension and block logic of WBS-8.1. |
+| WBS-8.4 | S | 0.2 | New actions on existing screens; the API is already on staging. |
 | WBS-9.1 | M | 0.4 | About 12 screens; one review round with the team. |
 | WBS-9.2 | M | 0.4 | Used in the Requirements Analysis; ChatGPT is used to draft images and visual assets. |
 | WBS-10.1 | S | 0.2 | Tooling setup; every development stream depends on it, so tests are written first from the start. |
@@ -217,7 +230,7 @@ Effort is estimated for each WBS activity in **man-weeks** (1 man-week = 40 hour
 | WBS-12.3 | M | 0.4 | Two members at 0.1 FTE for two weeks; based on the implemented scaffold and schema. |
 | WBS-12.4 | M | 0.4 | Two members at 0.1 FTE for two weeks; reuses the existing automated tests. |
 | WBS-12.5 | S | 0.2 | Two members at 0.1 FTE for one week, after the Test Specification deadline. |
-| **Total** | — | **12.1** | Development 10.3 + documentation 1.8 man-weeks |
+| **Total** | — | **13.1** | Development 11.3 + documentation 1.8 man-weeks (v1.4: +1.0 for the customer requests) |
 
 **Estimation method:**
 1. The team sized each activity with **planning poker** (T-shirt sizes); when estimates differed, the team discussed them and estimated again until consensus.
@@ -232,7 +245,7 @@ Effort is estimated for each WBS activity in **man-weeks** (1 man-week = 40 hour
 4. **AI agents:** the scale already assumes AI-assisted development. Two agents are used: **Claude Code** for coding, test generation, and documentation drafting, and **ChatGPT** for image creation and design assets. We expect Claude Code to reduce writing time for boilerplate code and tests by about 25%, but every AI-generated output is reviewed and tested by a team member, which adds review effort. The net effect is included in the scale; AI agents are not counted as separate team members.
 5. **Expert judgement:** the team leads checked the estimates in their area (backend, mobile, DevOps, QA). Activities with new technologies for the team (WebSocket chat) and the main feed screen were sized one level higher.
 
-**Capacity check:** the total estimate is **12.1 man-weeks**. The team capacity for development is 5 members × 0.4 FTE × 7.6 weeks ≈ 15 man-weeks, and for documentation 5 × 0.1 FTE × 8.7 weeks ≈ 4.4 man-weeks. Development uses about 68% of its capacity; the rest is the buffer for customer requests, bug fixing, and estimation errors, together with the 5-day buffer before the code freeze.
+**Capacity check:** the total estimate is **13.1 man-weeks** (12.1 before the customer requests of v1.4). The team capacity for development is 5 members × 0.4 FTE × 7.6 weeks ≈ 15 man-weeks, and for documentation 5 × 0.1 FTE × 8.7 weeks ≈ 4.4 man-weeks. Development uses about 75% of its capacity (68% before v1.4); the rest is the buffer for further customer requests, bug fixing, and estimation errors, together with the 4-day buffer before the code freeze.
 
 **Effort versus duration:** If an activity requires **2 man-weeks** and **2 fully allocated team members** can work in parallel, its estimated duration is **1 week** (assuming no other constraints). In this plan, **duration (days) = effort ÷ total FTE allocated to the activity × 7**, rounded to whole days. For example, WBS-5.3a needs 0.4 man-weeks and one member at 0.4 FTE, so it takes 1 week (7 days); WBS-6.1 needs 0.8 man-weeks with two members at 0.4 FTE, so it also takes 7 days; a T-size activity at 0.4 FTE takes 2 days. Document activities (WBS-12.x) take the time window between two course deadlines.
 
@@ -287,17 +300,23 @@ Activities are listed in chronological order of their start date, with their ass
 | 27 | WBS-12.3 | Design Specification | Mohammed Alashi, Ali Çetin | 24.11.2026 | 07.12.2026 | WBS-12.2 |
 | 28 | WBS-3.2b | Profile screens (integration) | Erinç Özarı | 27.11.2026 | 28.11.2026 | WBS-3.2a, WBS-3.1, WBS-11.2 |
 | 29 | WBS-8.1 | Block, report, and suspension API | Ali Çetin | 27.11.2026 | 03.12.2026 | WBS-2.2, WBS-4.2 |
-| 30 | WBS-2.3b | Authentication screens (integration) | Enes Durukan | 28.11.2026 | 01.12.2026 | WBS-2.3a, WBS-2.1, WBS-2.2, WBS-11.2 |
-| 31 | WBS-5.3b | Join Activity feed screens (integration) | Erinç Özarı | 30.11.2026 | 06.12.2026 | WBS-5.3a, WBS-5.1, WBS-5.2, WBS-11.2 |
-| 32 | WBS-6.1 | Real-time chat service | İbrahim Meral, Mohammed Alashi | 30.11.2026 | 06.12.2026 | WBS-5.2 |
-| 33 | WBS-4.3b | Home and Add Activity screens (integration) | Enes Durukan | 02.12.2026 | 05.12.2026 | WBS-4.3a, WBS-4.2, WBS-5.1, WBS-11.2 |
-| 34 | WBS-6.2b | Chat screen (integration) | Enes Durukan | 07.12.2026 | 10.12.2026 | WBS-6.2a, WBS-6.1, WBS-11.2 |
-| 35 | WBS-8.2b | Moderation and safety screens (integration) | Erinç Özarı | 07.12.2026 | 10.12.2026 | WBS-8.2a, WBS-8.1 |
-| 36 | WBS-10.2b | Integration and end-to-end test run | İbrahim Meral | 07.12.2026 | 10.12.2026 | WBS-10.2a, WBS-3.1, WBS-6.1, WBS-7.1, WBS-8.1, WBS-11.2 |
-| 37 | WBS-12.4 | Test Specification | İbrahim Meral, Ali Çetin | 08.12.2026 | 21.12.2026 | WBS-12.3 |
-| 38 | WBS-10.3 | Performance, security tests, and bug fixing | Whole team (all 5) | 11.12.2026 | 16.12.2026 | WBS-10.2b, WBS-2.3b, WBS-3.2b, WBS-4.3b, WBS-5.3b, WBS-6.2b, WBS-7.2, WBS-8.2b |
-| 39 | WBS-11.3 | Production deployment and v1.0.0 release | Ali Çetin | 17.12.2026 | 20.12.2026 | WBS-10.3, WBS-11.2 |
-| 40 | WBS-12.5 | AI usage report, demo, and final presentation | Enes Durukan, Erinç Özarı | 22.12.2026 | 28.12.2026 | WBS-12.4, WBS-11.3 |
+| 30 | WBS-4.4 | Post rule and report retention changes | İbrahim Meral | 27.11.2026 | 28.11.2026 | WBS-4.2, WBS-1.2 |
+| 31 | WBS-2.3b | Authentication screens (integration) | Enes Durukan | 28.11.2026 | 01.12.2026 | WBS-2.3a, WBS-2.1, WBS-2.2, WBS-11.2 |
+| 32 | WBS-5.3b | Join Activity feed screens (integration) | Erinç Özarı | 30.11.2026 | 06.12.2026 | WBS-5.3a, WBS-5.1, WBS-5.2, WBS-11.2 |
+| 33 | WBS-6.1 | Real-time chat service | İbrahim Meral, Mohammed Alashi | 30.11.2026 | 06.12.2026 | WBS-5.2 |
+| 34 | WBS-4.3b | Home and Add Activity screens (integration) | Enes Durukan | 02.12.2026 | 05.12.2026 | WBS-4.3a, WBS-4.2, WBS-5.1, WBS-11.2 |
+| 35 | WBS-2.4 | Account security extensions | Ali Çetin | 04.12.2026 | 07.12.2026 | WBS-2.1, WBS-2.2 |
+| 36 | WBS-6.2b | Chat screen (integration) | Enes Durukan | 07.12.2026 | 10.12.2026 | WBS-6.2a, WBS-6.1, WBS-11.2 |
+| 37 | WBS-8.2b | Moderation and safety screens (integration) | Erinç Özarı | 07.12.2026 | 10.12.2026 | WBS-8.2a, WBS-8.1 |
+| 38 | WBS-10.2b | Integration and end-to-end test run | İbrahim Meral | 07.12.2026 | 10.12.2026 | WBS-10.2a, WBS-3.1, WBS-6.1, WBS-7.1, WBS-8.1, WBS-11.2 |
+| 39 | WBS-5.4 | Withdraw, cancel, and account deletion API | Mohammed Alashi | 07.12.2026 | 10.12.2026 | WBS-5.2, WBS-6.1, WBS-8.1 |
+| 40 | WBS-12.4 | Test Specification | İbrahim Meral, Ali Çetin | 08.12.2026 | 21.12.2026 | WBS-12.3 |
+| 41 | WBS-8.3 | Suspension and unblock extensions | Ali Çetin | 08.12.2026 | 09.12.2026 | WBS-8.1, WBS-4.4 |
+| 42 | WBS-2.5 | Account and chat change screens | Enes Durukan | 11.12.2026 | 14.12.2026 | WBS-2.3b, WBS-2.4, WBS-5.4, WBS-11.2 |
+| 43 | WBS-8.4 | Request and moderation change screens | Erinç Özarı | 11.12.2026 | 14.12.2026 | WBS-5.3b, WBS-5.4, WBS-8.3, WBS-4.4, WBS-11.2 |
+| 44 | WBS-10.3 | Performance, security tests, and bug fixing | Whole team (all 5) | 15.12.2026 | 17.12.2026 | WBS-10.2b, WBS-2.3b, WBS-3.2b, WBS-4.3b, WBS-5.3b, WBS-6.2b, WBS-7.2, WBS-8.2b, WBS-2.4, WBS-2.5, WBS-4.4, WBS-5.4, WBS-8.3, WBS-8.4 |
+| 45 | WBS-11.3 | Production deployment and v1.0.0 release | Ali Çetin | 18.12.2026 | 21.12.2026 | WBS-10.3, WBS-11.2 |
+| 46 | WBS-12.5 | AI usage report, demo, and final presentation | Enes Durukan, Erinç Özarı | 22.12.2026 | 28.12.2026 | WBS-12.4, WBS-11.3 |
 
 **Responsibility and allocation of each member:**
 
@@ -334,22 +353,28 @@ Activities are listed in chronological order of their start date, with their ass
 | WBS-12.3 | Mohammed Alashi | Writes the architecture and API design | 0.1 |
 | WBS-12.3 | Ali Çetin | Writes the deployment design | 0.1 |
 | WBS-3.2b | Erinç Özarı | Connects the profile screens to the API | 0.4 |
+| WBS-4.4 | İbrahim Meral | Changes the post rules and the snapshot retention in the end-of-day job | 0.4 |
 | WBS-8.1 | Ali Çetin | Implements block, report, and suspension logic | 0.4 |
 | WBS-2.3b | Enes Durukan | Connects the screens to the API and stores tokens | 0.4 |
 | WBS-5.3b | Erinç Özarı | Connects the feed and request screens to the APIs | 0.4 |
 | WBS-6.1 | İbrahim Meral | Implements the WebSocket service and persistence | 0.4 |
 | WBS-6.1 | Mohammed Alashi | Connects chat access rules to join requests and matches | 0.4 |
 | WBS-4.3b | Enes Durukan | Connects the Add Activity flow to the post API | 0.4 |
+| WBS-2.4 | Ali Çetin | Implements the code limits, password reset, and rate limiting | 0.4 |
 | WBS-6.2b | Enes Durukan | Builds the WebSocket client and reconnect handling | 0.4 |
 | WBS-8.2b | Erinç Özarı | Connects the moderation screens to the API | 0.4 |
 | WBS-10.2b | İbrahim Meral | Runs and completes the integration and end-to-end tests | 0.4 |
+| WBS-5.4 | Mohammed Alashi | Implements withdraw, cancel, and account deletion | 0.4 |
+| WBS-8.3 | Ali Çetin | Implements suspension durations, unblock, and the first-administrator command | 0.4 |
+| WBS-2.5 | Enes Durukan | Builds and connects the account and chat change screens | 0.4 |
+| WBS-8.4 | Erinç Özarı | Builds and connects the request and moderation change screens | 0.4 |
 | WBS-12.4 | İbrahim Meral | Writes the test plan and test cases | 0.1 |
 | WBS-12.4 | Ali Çetin | Documents CI and test environments | 0.1 |
-| WBS-10.3 | İbrahim Meral | Runs security checks and tracks defects | 0.2 |
-| WBS-10.3 | Mohammed Alashi | Fixes backend defects and runs load tests | 0.2 |
-| WBS-10.3 | Ali Çetin | Fixes authentication and deployment defects | 0.2 |
-| WBS-10.3 | Enes Durukan | Fixes mobile defects | 0.2 |
-| WBS-10.3 | Erinç Özarı | Fixes UI defects and checks usability | 0.2 |
+| WBS-10.3 | İbrahim Meral | Runs security checks and tracks defects | 0.4 |
+| WBS-10.3 | Mohammed Alashi | Fixes backend defects and runs load tests | 0.4 |
+| WBS-10.3 | Ali Çetin | Fixes authentication and deployment defects | 0.4 |
+| WBS-10.3 | Enes Durukan | Fixes mobile defects | 0.4 |
+| WBS-10.3 | Erinç Özarı | Fixes UI defects and checks usability | 0.4 |
 | WBS-11.3 | Ali Çetin | Deploys the final version and publishes the release | 0.4 |
 | WBS-12.5 | Enes Durukan | Compiles the AI usage report and presentation | 0.1 |
 | WBS-12.5 | Erinç Özarı | Prepares the demo scenario | 0.1 |
@@ -358,15 +383,16 @@ Activities are listed in chronological order of their start date, with their ass
 
 | Member | Development activities (in order) | Number of activities |
 |---|---|---|
-| Enes Durukan | WBS-1.3 → WBS-2.3a → WBS-4.3a → WBS-6.2a → WBS-7.2 → WBS-2.3b → WBS-4.3b → WBS-6.2b → WBS-10.3 | 9 |
-| Erinç Özarı | WBS-9.1 → WBS-9.2 → WBS-3.2a → WBS-5.3a → WBS-8.2a → WBS-3.2b → WBS-5.3b → WBS-8.2b → WBS-10.3 | 9 |
-| Mohammed Alashi | WBS-1.1 → WBS-1.2 → WBS-4.1 → WBS-5.1 → WBS-5.2 → WBS-6.1 → WBS-10.3 | 7 |
-| Ali Çetin | WBS-11.1 → WBS-11.2 → WBS-2.2 → WBS-2.1 → WBS-3.1 → WBS-8.1 → WBS-10.3 → WBS-11.3 | 8 |
-| İbrahim Meral | WBS-10.1 → WBS-10.2a → WBS-7.1 → WBS-4.2 → WBS-6.1 → WBS-10.2b → WBS-10.3 | 7 |
+| Enes Durukan | WBS-1.3 → WBS-2.3a → WBS-4.3a → WBS-6.2a → WBS-7.2 → WBS-2.3b → WBS-4.3b → WBS-6.2b → WBS-2.5 → WBS-10.3 | 10 |
+| Erinç Özarı | WBS-9.1 → WBS-9.2 → WBS-3.2a → WBS-5.3a → WBS-8.2a → WBS-3.2b → WBS-5.3b → WBS-8.2b → WBS-8.4 → WBS-10.3 | 10 |
+| Mohammed Alashi | WBS-1.1 → WBS-1.2 → WBS-4.1 → WBS-5.1 → WBS-5.2 → WBS-6.1 → WBS-5.4 → WBS-10.3 | 8 |
+| Ali Çetin | WBS-11.1 → WBS-11.2 → WBS-2.2 → WBS-2.1 → WBS-3.1 → WBS-8.1 → WBS-2.4 → WBS-8.3 → WBS-10.3 → WBS-11.3 | 10 |
+| İbrahim Meral | WBS-10.1 → WBS-10.2a → WBS-7.1 → WBS-4.2 → WBS-4.4 → WBS-6.1 → WBS-10.2b → WBS-10.3 | 8 |
 
 **Availability or allocation constraints:**
 - Each member works about 20 hours per week on the project (0.5 FTE): at most 0.4 FTE on development and 0.1 FTE on documentation and meetings. **No member works on more than one development activity at the same time**; the schedule in Section 5 is levelled so that each member's activities follow one another.
-- WBS-10.3 is the only activity shared by the whole team: all five members work on it at 0.2 FTE each.
+- WBS-10.3 is the only activity shared by the whole team: all five members work on it at 0.4 FTE each (0.2 FTE before v1.4), because every member's other development activities have ended by then. This shortens it from 6 to 3 days and makes room for the customer requests.
+- The customer requests of v1.4 (issue #20) were accepted on 2026-11-27, so WBS-4.4 starts on that day even though its predecessors finished earlier; the other new activities start when their owners are free.
 - The Project Manager's coordination work (board tracking, customer meetings, issue writing) is part of the Project Manager's 0.1 FTE non-development allocation.
 - The midterm exam is in the week of 2026-11-23, while the critical activity WBS-5.2 is running. Its owner plans study time in advance, and the buffer before the code freeze covers lower availability.
 - Other courses' exams and assignments may temporarily reduce a member's availability; in that case work is moved to the member's area lead or shared through pair programming.
@@ -414,10 +440,44 @@ flowchart LR
     W10_1["WBS-10.1<br/>Test strategy and test-first setup<br/>4 d"]
     W10_2a["WBS-10.2a<br/>End-to-end test scenarios (test-first)<br/>4 d"]
     W10_2b["WBS-10.2b<br/>Integration and end-to-end test run<br/>4 d"]
-    W10_3["WBS-10.3<br/>Performance, security tests, and bug fixing<br/>6 d"]
+    W10_3["WBS-10.3<br/>Performance, security tests, and bug fixing<br/>3 d"]
     W11_1["WBS-11.1<br/>CI pipeline<br/>4 d"]
     W11_2["WBS-11.2<br/>Containerization and staging deployment<br/>7 d"]
     W11_3["WBS-11.3<br/>Production deployment and v1.0.0 release<br/>4 d"]
+    W2_4["WBS-2.4<br/>Account security extensions<br/>4 d"]
+    W2_5["WBS-2.5<br/>Account and chat change screens<br/>4 d"]
+    W4_4["WBS-4.4<br/>Post rule and report retention changes<br/>2 d"]
+    W5_4["WBS-5.4<br/>Withdraw, cancel, and account deletion API<br/>4 d"]
+    W8_3["WBS-8.3<br/>Suspension and unblock extensions<br/>2 d"]
+    W8_4["WBS-8.4<br/>Request and moderation change screens<br/>4 d"]
+    W2_1 --> W2_4
+    W2_2 --> W2_4
+    W8_1 -.-> W2_4
+    W2_3b --> W2_5
+    W2_4 --> W2_5
+    W5_4 --> W2_5
+    W11_2 --> W2_5
+    W6_2b -.-> W2_5
+    W4_2 --> W4_4
+    W1_2 --> W4_4
+    W5_2 --> W5_4
+    W6_1 --> W5_4
+    W8_1 --> W5_4
+    W8_1 --> W8_3
+    W4_4 --> W8_3
+    W2_4 -.-> W8_3
+    W5_3b --> W8_4
+    W5_4 --> W8_4
+    W8_3 --> W8_4
+    W4_4 --> W8_4
+    W11_2 --> W8_4
+    W8_2b -.-> W8_4
+    W2_4 --> W10_3
+    W2_5 --> W10_3
+    W4_4 --> W10_3
+    W5_4 --> W10_3
+    W8_3 --> W10_3
+    W8_4 --> W10_3
     START --> W1_1
     W1_1 --> W1_2
     W10_1 --> W1_2
@@ -513,7 +573,7 @@ flowchart LR
     W11_3 --> W12_5
     W12_5 --> FINISH((Finish))
     classDef critical fill:#ffe1e1,stroke:#d33,stroke-width:3px;
-    class W1_1,W1_2,W2_2,W4_2,W5_1,W5_2,W5_3b,W6_1,W6_2b,W8_2b,W10_1,W10_2b,W10_3,W11_3,W12_1,W12_2,W12_3,W12_4,W12_5 critical;
+    class W1_1,W1_2,W2_2,W2_5,W4_2,W5_1,W5_2,W5_3b,W5_4,W6_1,W6_2b,W8_2b,W8_4,W10_1,W10_3,W11_3,W12_1,W12_2,W12_3,W12_4,W12_5 critical;
 ```
 
 **PERT notes (activity durations and dependencies):**
@@ -523,45 +583,52 @@ flowchart LR
 - After the database schema (WBS-1.2) and login/RBAC (WBS-2.2), three backend streams run in parallel: **registration and profile** (WBS-2.1 → 3.1), **activity posts** (WBS-4.2), and the **activity feed** (WBS-5.1). Join requests (WBS-5.2) need both posts and the feed.
 - Each mobile **UI** activity (a) needs the style guide (WBS-9.2) and the API contract (WBS-1.2); each mobile **integration** activity (b) needs its UI part, the backend activity it uses, and the staging environment.
 - The integration and end-to-end test run (WBS-10.2b) can only start after the profile, chat, notification, and moderation services are complete; WBS-10.3 needs every integration activity.
+- **Customer requests (v1.4):** the four new backend activities follow the activities they extend (WBS-2.4 after WBS-2.1, WBS-4.4 after WBS-4.2, WBS-5.4 after WBS-5.2 and WBS-6.1, WBS-8.3 after WBS-8.1), and the two new mobile activities need them (WBS-2.5, WBS-8.4). WBS-10.3 needs all six.
 - The documentation chain (WBS-12.1 → 12.2 → 12.3 → 12.4 → 12.5) is part of the network. Its dates are fixed by the course deadlines, and WBS-12.5 also needs the release (WBS-11.3).
 
 | WBS activity ID | Predecessors (dependencies) | Resource predecessor | Duration (days) | Earliest start | Earliest finish | Slack (days) |
 |---|---|---|---|---|---|---|
-| WBS-1.1 | — | — | 4 | 29.10 | 01.11 | 1 |
-| WBS-1.2 | WBS-1.1, WBS-10.1 | — | 7 | 02.11 | 08.11 | 1 |
-| WBS-1.3 | — | — | 4 | 29.10 | 01.11 | 16 |
-| WBS-2.1 | WBS-2.2 | — | 7 | 16.11 | 22.11 | 4 |
-| WBS-2.2 | WBS-1.2, WBS-11.1 | — | 7 | 09.11 | 15.11 | 1 |
-| WBS-2.3a | WBS-1.3, WBS-9.2, WBS-1.2, WBS-10.1 | — | 4 | 12.11 | 15.11 | 6 |
-| WBS-2.3b | WBS-2.3a, WBS-2.1, WBS-2.2, WBS-11.2 | WBS-7.2 | 4 | 28.11 | 01.12 | 6 |
-| WBS-3.1 | WBS-2.1 | — | 4 | 23.11 | 26.11 | 4 |
-| WBS-3.2a | WBS-9.2, WBS-1.2 | — | 2 | 12.11 | 13.11 | 10 |
-| WBS-3.2b | WBS-3.2a, WBS-3.1, WBS-11.2 | — | 2 | 27.11 | 28.11 | 13 |
-| WBS-4.1 | WBS-1.2 | — | 2 | 09.11 | 10.11 | 6 |
-| WBS-4.2 | WBS-4.1, WBS-2.2 | — | 7 | 16.11 | 22.11 | 1 |
-| WBS-4.3a | WBS-9.2, WBS-2.3a | — | 4 | 16.11 | 19.11 | 6 |
-| WBS-4.3b | WBS-4.3a, WBS-4.2, WBS-5.1, WBS-11.2 | WBS-2.3b | 4 | 02.12 | 05.12 | 6 |
-| WBS-5.1 | WBS-4.1, WBS-2.2 | — | 7 | 16.11 | 22.11 | 1 |
-| WBS-5.2 | WBS-5.1, WBS-4.2 | — | 7 | 23.11 | 29.11 | 1 |
-| WBS-5.3a | WBS-9.2, WBS-3.2a | — | 7 | 14.11 | 20.11 | 10 |
-| WBS-5.3b | WBS-5.3a, WBS-5.1, WBS-5.2, WBS-11.2 | — | 7 | 30.11 | 06.12 | 1 |
-| WBS-6.1 | WBS-5.2 | — | 7 | 30.11 | 06.12 | 1 |
-| WBS-6.2a | WBS-4.3a, WBS-9.2 | — | 4 | 20.11 | 23.11 | 6 |
-| WBS-6.2b | WBS-6.2a, WBS-6.1, WBS-11.2 | — | 4 | 07.12 | 10.12 | 1 |
-| WBS-7.1 | WBS-1.2 | — | 4 | 09.11 | 12.11 | 17 |
-| WBS-7.2 | WBS-6.2a, WBS-7.1 | — | 4 | 24.11 | 27.11 | 6 |
-| WBS-8.1 | WBS-2.2, WBS-4.2 | WBS-3.1 | 7 | 27.11 | 03.12 | 4 |
-| WBS-8.2a | WBS-5.3a | — | 4 | 21.11 | 24.11 | 13 |
-| WBS-8.2b | WBS-8.2a, WBS-8.1 | WBS-5.3b | 4 | 07.12 | 10.12 | 1 |
-| WBS-9.1 | — | — | 7 | 29.10 | 04.11 | 6 |
-| WBS-9.2 | WBS-9.1 | — | 7 | 05.11 | 11.11 | 6 |
-| WBS-10.1 | — | — | 4 | 29.10 | 01.11 | 1 |
-| WBS-10.2a | WBS-10.1 | — | 4 | 02.11 | 05.11 | 32 |
-| WBS-10.2b | WBS-10.2a, WBS-3.1, WBS-6.1, WBS-7.1, WBS-8.1, WBS-11.2 | — | 4 | 07.12 | 10.12 | 1 |
-| WBS-10.3 | WBS-10.2b, WBS-2.3b, WBS-3.2b, WBS-4.3b, WBS-5.3b, WBS-6.2b, WBS-7.2, WBS-8.2b | — | 6 | 11.12 | 16.12 | 1 |
-| WBS-11.1 | — | — | 4 | 29.10 | 01.11 | 8 |
-| WBS-11.2 | WBS-1.1, WBS-11.1, WBS-10.1 | — | 7 | 02.11 | 08.11 | 22 |
-| WBS-11.3 | WBS-10.3, WBS-11.2 | — | 4 | 17.12 | 20.12 | 1 |
+| WBS-1.1 | — | — | 4 | 29.10 | 01.11 | 0 |
+| WBS-1.2 | WBS-1.1, WBS-10.1 | — | 7 | 02.11 | 08.11 | 0 |
+| WBS-1.3 | — | — | 4 | 29.10 | 01.11 | 19 |
+| WBS-2.1 | WBS-2.2 | — | 7 | 16.11 | 22.11 | 1 |
+| WBS-2.2 | WBS-1.2, WBS-11.1 | — | 7 | 09.11 | 15.11 | 0 |
+| WBS-2.3a | WBS-1.3, WBS-9.2, WBS-1.2, WBS-10.1 | — | 4 | 12.11 | 15.11 | 9 |
+| WBS-2.3b | WBS-2.3a, WBS-2.1, WBS-2.2, WBS-11.2 | WBS-7.2 | 4 | 28.11 | 01.12 | 9 |
+| WBS-2.4 | WBS-2.1, WBS-2.2 | WBS-8.1 | 4 | 04.12 | 07.12 | 1 |
+| WBS-2.5 | WBS-2.3b, WBS-2.4, WBS-5.4, WBS-11.2 | WBS-6.2b | 4 | 11.12 | 14.12 | 0 |
+| WBS-3.1 | WBS-2.1 | — | 4 | 23.11 | 26.11 | 1 |
+| WBS-3.2a | WBS-9.2, WBS-1.2 | — | 2 | 12.11 | 13.11 | 9 |
+| WBS-3.2b | WBS-3.2a, WBS-3.1, WBS-11.2 | — | 2 | 27.11 | 28.11 | 16 |
+| WBS-4.1 | WBS-1.2 | — | 2 | 09.11 | 10.11 | 5 |
+| WBS-4.2 | WBS-4.1, WBS-2.2 | — | 7 | 16.11 | 22.11 | 0 |
+| WBS-4.3a | WBS-9.2, WBS-2.3a | — | 4 | 16.11 | 19.11 | 9 |
+| WBS-4.3b | WBS-4.3a, WBS-4.2, WBS-5.1, WBS-11.2 | WBS-2.3b | 4 | 02.12 | 05.12 | 9 |
+| WBS-4.4 | WBS-4.2, WBS-1.2 | — | 2 | 27.11 | 28.11 | 10 |
+| WBS-5.1 | WBS-4.1, WBS-2.2 | — | 7 | 16.11 | 22.11 | 0 |
+| WBS-5.2 | WBS-5.1, WBS-4.2 | — | 7 | 23.11 | 29.11 | 0 |
+| WBS-5.3a | WBS-9.2, WBS-3.2a | — | 7 | 14.11 | 20.11 | 9 |
+| WBS-5.3b | WBS-5.3a, WBS-5.1, WBS-5.2, WBS-11.2 | — | 7 | 30.11 | 06.12 | 0 |
+| WBS-5.4 | WBS-5.2, WBS-6.1, WBS-8.1 | — | 4 | 07.12 | 10.12 | 0 |
+| WBS-6.1 | WBS-5.2 | — | 7 | 30.11 | 06.12 | 0 |
+| WBS-6.2a | WBS-4.3a, WBS-9.2 | — | 4 | 20.11 | 23.11 | 9 |
+| WBS-6.2b | WBS-6.2a, WBS-6.1, WBS-11.2 | — | 4 | 07.12 | 10.12 | 0 |
+| WBS-7.1 | WBS-1.2 | — | 4 | 09.11 | 12.11 | 20 |
+| WBS-7.2 | WBS-6.2a, WBS-7.1 | — | 4 | 24.11 | 27.11 | 9 |
+| WBS-8.1 | WBS-2.2, WBS-4.2 | WBS-3.1 | 7 | 27.11 | 03.12 | 1 |
+| WBS-8.2a | WBS-5.3a | — | 4 | 21.11 | 24.11 | 12 |
+| WBS-8.2b | WBS-8.2a, WBS-8.1 | WBS-5.3b | 4 | 07.12 | 10.12 | 0 |
+| WBS-8.3 | WBS-8.1, WBS-4.4 | WBS-2.4 | 2 | 08.12 | 09.12 | 1 |
+| WBS-8.4 | WBS-5.3b, WBS-5.4, WBS-8.3, WBS-4.4, WBS-11.2 | WBS-8.2b | 4 | 11.12 | 14.12 | 0 |
+| WBS-9.1 | — | — | 7 | 29.10 | 04.11 | 9 |
+| WBS-9.2 | WBS-9.1 | — | 7 | 05.11 | 11.11 | 9 |
+| WBS-10.1 | — | — | 4 | 29.10 | 01.11 | 0 |
+| WBS-10.2a | WBS-10.1 | — | 4 | 02.11 | 05.11 | 35 |
+| WBS-10.2b | WBS-10.2a, WBS-3.1, WBS-6.1, WBS-7.1, WBS-8.1, WBS-11.2 | — | 4 | 07.12 | 10.12 | 4 |
+| WBS-10.3 | WBS-10.2b, WBS-2.3b, WBS-3.2b, WBS-4.3b, WBS-5.3b, WBS-6.2b, WBS-7.2, WBS-8.2b, WBS-2.4, WBS-2.5, WBS-4.4, WBS-5.4, WBS-8.3, WBS-8.4 | — | 3 | 15.12 | 17.12 | 0 |
+| WBS-11.1 | — | — | 4 | 29.10 | 01.11 | 7 |
+| WBS-11.2 | WBS-1.1, WBS-11.1, WBS-10.1 | — | 7 | 02.11 | 08.11 | 21 |
+| WBS-11.3 | WBS-10.3, WBS-11.2 | — | 4 | 18.12 | 21.12 | 0 |
 | WBS-12.1 | — | — | 5 | 29.10 | 02.11 | 0 |
 | WBS-12.2 | WBS-12.1 | — | 21 | 03.11 | 23.11 | 0 |
 | WBS-12.3 | WBS-12.2 | — | 14 | 24.11 | 07.12 | 0 |
@@ -573,40 +640,41 @@ flowchart LR
 **Critical path (in activity order):**
 `WBS-12.1 → WBS-12.2 → WBS-12.3 → WBS-12.4 → WBS-12.5`
 
-**Development critical chain (1 day of slack):**
-`WBS-1.1 → WBS-1.2 → WBS-2.2 → WBS-4.2 → WBS-5.2 → WBS-5.3b → WBS-8.2b → WBS-10.3 → WBS-11.3`
+**Development critical chain (0 days of slack since v1.4):**
+`WBS-1.1 → WBS-1.2 → WBS-2.2 → WBS-4.2 → WBS-5.2 → WBS-6.1 → WBS-5.4 → WBS-8.4 → WBS-10.3 → WBS-11.3 → WBS-12.5`
 
-Other development activities with the same slack (parallel chains): WBS-10.1, WBS-5.1, WBS-6.1, WBS-6.2b, WBS-10.2b.
+Other development activities with the same slack (parallel chains): WBS-10.1, WBS-5.1, WBS-5.3b, WBS-8.2b, WBS-6.2b, WBS-2.5.
 
 | Activity ID | Duration (days) | Scheduled dates | Slack (days) | Reason it is critical |
 |---|---|---|---|---|
-| WBS-1.1 | 4 | 29.10 – 01.11 | 1 | Every backend activity depends on the scaffold. |
-| WBS-10.1 | 4 | 29.10 – 01.11 | 1 | Every development stream starts from the test-first setup. |
+| WBS-1.1 | 4 | 29.10 – 01.11 | 0 | Every backend activity depends on the scaffold. |
+| WBS-10.1 | 4 | 29.10 – 01.11 | 0 | Every development stream starts from the test-first setup. |
 | WBS-12.1 | 5 | 29.10 – 02.11 | 0 | The first course deliverable; every later document builds on it. |
-| WBS-1.2 | 7 | 02.11 – 08.11 | 1 | All backend features and all mobile UI activities need the schema and the API contract. |
+| WBS-1.2 | 7 | 02.11 – 08.11 | 0 | All backend features and all mobile UI activities need the schema and the API contract. |
 | WBS-12.2 | 21 | 03.11 – 23.11 | 0 | Builds on the Requirements Specification; fixed deadline 2026-11-23. |
-| WBS-2.2 | 7 | 09.11 – 15.11 | 1 | Posts, the feed, and moderation all need the authorization check. |
-| WBS-4.2 | 7 | 16.11 – 22.11 | 1 | Join requests need activity posts. |
-| WBS-5.1 | 7 | 16.11 – 22.11 | 1 | Join requests need the feed; the feed integration depends on it. |
-| WBS-5.2 | 7 | 23.11 – 29.11 | 1 | The chat and the feed integration need join requests and matches. |
+| WBS-2.2 | 7 | 09.11 – 15.11 | 0 | Posts, the feed, and moderation all need the authorization check. |
+| WBS-4.2 | 7 | 16.11 – 22.11 | 0 | Join requests need activity posts. |
+| WBS-5.1 | 7 | 16.11 – 22.11 | 0 | Join requests need the feed; the feed integration depends on it. |
+| WBS-5.2 | 7 | 23.11 – 29.11 | 0 | The chat, the feed integration, and the withdraw and cancel rules need join requests and matches. |
 | WBS-12.3 | 14 | 24.11 – 07.12 | 0 | Builds on the Requirements Analysis; fixed deadline 2026-12-07. |
-| WBS-5.3b | 7 | 30.11 – 06.12 | 1 | The main screen must be integrated before the whole-team test week. |
-| WBS-6.1 | 7 | 30.11 – 06.12 | 1 | The chat is the last backend feature before the end-to-end test run. |
-| WBS-6.2b | 4 | 07.12 – 10.12 | 1 | The chat screen can only be integrated after the chat service. |
-| WBS-8.2b | 4 | 07.12 – 10.12 | 1 | Follows the feed integration for the same member (resource dependency). |
-| WBS-10.2b | 4 | 07.12 – 10.12 | 1 | Needs all backend features; the final stabilization depends on its results. |
+| WBS-5.3b | 7 | 30.11 – 06.12 | 0 | The main screen must be integrated before the moderation integration and the change screens of the same member. |
+| WBS-6.1 | 7 | 30.11 – 06.12 | 0 | The withdraw and cancel API makes the chat read-only, so it needs the chat service. |
+| WBS-5.4 | 4 | 07.12 – 10.12 | 0 | Both new mobile activities need withdraw, cancel, and account deletion (customer request). |
+| WBS-6.2b | 4 | 07.12 – 10.12 | 0 | The chat screen must be integrated before the same member builds the change screens. |
+| WBS-8.2b | 4 | 07.12 – 10.12 | 0 | Follows the feed integration for the same member (resource dependency). |
 | WBS-12.4 | 14 | 08.12 – 21.12 | 0 | Builds on the Design Specification; fixed deadline 2026-12-21. |
-| WBS-10.3 | 6 | 11.12 – 16.12 | 1 | No release is possible while critical defects remain open. |
-| WBS-11.3 | 4 | 17.12 – 20.12 | 1 | The release is needed for the demo and presentation (WBS-12.5) and the code freeze. |
+| WBS-2.5 | 4 | 11.12 – 14.12 | 0 | The account and chat change screens must be ready before the whole-team test week. |
+| WBS-8.4 | 4 | 11.12 – 14.12 | 0 | The request and moderation change screens must be ready before the whole-team test week. |
+| WBS-10.3 | 3 | 15.12 – 17.12 | 0 | No release is possible while critical defects remain open. |
+| WBS-11.3 | 4 | 18.12 – 21.12 | 0 | The release is needed for the demo and presentation (WBS-12.5) and the code freeze. |
 | WBS-12.5 | 7 | 22.12 – 28.12 | 0 | Needs the Test Specification and the release; ends with the final presentation on 2026-12-28. |
 
-**Total project schedule:** about **12 weeks**, from **2026-10-05** (Project Charter) to **2026-12-28** (final presentation). The planning phase (Project Charter and Project Plan, 2026-10-05 to 2026-10-28) comes before this network. The network runs from **2026-10-29** to **2026-12-28** (61 days), and the development critical chain takes **53 days**, from **2026-10-29** to **2026-12-20**.
+**Total project schedule:** about **12 weeks**, from **2026-10-05** (Project Charter) to **2026-12-28** (final presentation). The planning phase (Project Charter and Project Plan, 2026-10-05 to 2026-10-28) comes before this network. The network runs from **2026-10-29** to **2026-12-28** (61 days), and the development critical chain takes **54 days**, from **2026-10-29** to **2026-12-21**.
 
 **Critical-path explanation:**
 The critical path is the longest path from Start to Finish in the PERT network; it is found by calculating the earliest start and finish of each activity (forward pass) and the latest start and finish (backward pass). The network includes the documentation chain, because the last activity of the project (WBS-12.5) needs both the Test Specification and the release, and it includes the resource dependencies, because no member works on two development activities at the same time.
 
-The longest path is the documentation chain `WBS-12.1 → WBS-12.2 → WBS-12.3 → WBS-12.4 → WBS-12.5` (61 days). Its dates are fixed by the course deadlines, so **the course deadlines determine the project duration**: the project ends with the final presentation on 2026-12-28. The development critical chain is 53 days long and ends with the release on 2026-12-20. It has **1 day of slack** before the demo and presentation work (WBS-12.5) starts on 2026-12-22, and **5 days** before the code freeze on 2026-12-25. A delay of more than 1 day in a development critical activity, especially the join request API (WBS-5.2) or the chat service (WBS-6.1), therefore delays WBS-12.5. These activities are watched in every weekly meeting, and members with more slack help with them through pair programming.
-
+The longest path is the documentation chain `WBS-12.1 → WBS-12.2 → WBS-12.3 → WBS-12.4 → WBS-12.5` (61 days). Its dates are fixed by the course deadlines, so **the course deadlines determine the project duration**: the project ends with the final presentation on 2026-12-28. Since v1.4, the development critical chain also has **no slack**: the customer requests added 1.0 man-week of work, and the two mobile developers were already busy until 2026-12-10, so their change screens (WBS-2.5, WBS-8.4) run from 2026-12-11 to 2026-12-14. To keep the release before WBS-12.5, WBS-10.3 now runs at 0.4 FTE per member (3 days instead of 6). The release on 2026-12-21 is still **4 days** before the code freeze on 2026-12-25, but any delay in a development critical activity, especially the join request API (WBS-5.2), the chat service (WBS-6.1), or the withdraw and cancel API (WBS-5.4), now delays WBS-12.5. These activities are watched in every weekly meeting, and members with slack (WBS-10.2b, WBS-2.4, WBS-8.3, and the mobile activities before WBS-5.3b) help with them through pair programming. If a delay occurs, the Could and Should requirements of the change screens (FR-30, FR-32, FR-33, FR-25) are dropped first.
 
 ### 5.3 Gantt Chart — Project Timeline
 
@@ -630,6 +698,8 @@ gantt
     WBS-3.1 Profile API :w3_1, 2026-11-23, 4d
     WBS-3.2b Profile screens (integration) :w3_2b, 2026-11-27, 2d
     WBS-2.3b Authentication screens (integration) :w2_3b, 2026-11-28, 4d
+    WBS-2.4 Account security extensions :w2_4, 2026-12-04, 4d
+    WBS-2.5 Account and chat change screens :crit, w2_5, 2026-12-11, 4d
     section Activity Posts, Feed, and Join Requests
     WBS-4.1 Campus venue catalog :w4_1, 2026-11-09, 2d
     WBS-5.3a Join Activity feed screens (UI) :w5_3a, 2026-11-14, 7d
@@ -639,6 +709,8 @@ gantt
     WBS-5.2 Join request and match API :crit, w5_2, 2026-11-23, 7d
     WBS-5.3b Join Activity feed screens (integration) :crit, w5_3b, 2026-11-30, 7d
     WBS-4.3b Home and Add Activity screens (integration) :w4_3b, 2026-12-02, 4d
+    WBS-4.4 Post rule and report retention changes :w4_4, 2026-11-27, 2d
+    WBS-5.4 Withdraw, cancel, and account deletion API :crit, w5_4, 2026-12-07, 4d
     section Messaging and Notifications
     WBS-7.1 Push notification service :w7_1, 2026-11-09, 4d
     WBS-6.2a Chat screen (UI) :w6_2a, 2026-11-20, 4d
@@ -649,14 +721,16 @@ gantt
     WBS-8.2a Moderation and safety screens (UI) :w8_2a, 2026-11-21, 4d
     WBS-8.1 Block, report, and suspension API :w8_1, 2026-11-27, 7d
     WBS-8.2b Moderation and safety screens (integration) :crit, w8_2b, 2026-12-07, 4d
+    WBS-8.3 Suspension and unblock extensions :w8_3, 2026-12-08, 2d
+    WBS-8.4 Request and moderation change screens :crit, w8_4, 2026-12-11, 4d
     section Quality and Deployment
     WBS-10.1 Test strategy and test-first setup :crit, w10_1, 2026-10-29, 4d
     WBS-11.1 CI pipeline :w11_1, 2026-10-29, 4d
     WBS-10.2a End-to-end test scenarios (test-first) :w10_2a, 2026-11-02, 4d
     WBS-11.2 Containerization and staging deployment :w11_2, 2026-11-02, 7d
-    WBS-10.2b Integration and end-to-end test run :crit, w10_2b, 2026-12-07, 4d
-    WBS-10.3 Performance, security tests, and bug fixing :crit, w10_3, 2026-12-11, 6d
-    WBS-11.3 Production deployment and v1.0.0 release :crit, w11_3, 2026-12-17, 4d
+    WBS-10.2b Integration and end-to-end test run :w10_2b, 2026-12-07, 4d
+    WBS-10.3 Performance, security tests, and bug fixing :crit, w10_3, 2026-12-15, 3d
+    WBS-11.3 Production deployment and v1.0.0 release :crit, w11_3, 2026-12-18, 4d
     section Documentation
     WBS-12.1 Requirements Specification :crit, d121, 2026-10-29, 5d
     WBS-12.2 Requirements Analysis :crit, d122, 2026-11-03, 21d
@@ -671,12 +745,12 @@ gantt
 
 **Schedule consistency check:**
 - **WBS ↔ estimates:** every WBS activity in Section 2 has one estimate in Section 3, and each estimate matches its size on the conversion scale.
-- **Estimates ↔ resources:** every activity's duration equals its effort divided by the FTE allocated in Section 4.2 (e.g., WBS-6.1: 0.8 man-weeks ÷ (0.4 + 0.4) FTE = 1 week = 7 days).
+- **Estimates ↔ resources:** every activity's duration equals its effort divided by the FTE allocated in Section 4.2 (e.g., WBS-6.1: 0.8 man-weeks ÷ (0.4 + 0.4) FTE = 1 week = 7 days; WBS-10.3: 0.8 man-weeks ÷ (5 × 0.4) FTE = 2.8 days, rounded to 3).
 - **Resources ↔ availability:** no member works on more than one development activity (0.4 FTE) at any time, and each member's documentation work is 0.1 FTE.
 - **Dependencies:** every activity starts after all its predecessors have finished; no activity overlaps with a predecessor.
 - **PERT ↔ Gantt ↔ assignment table:** the Gantt bars and the dates in Section 4.2 use the earliest start dates from the PERT calculation, and the critical activities are marked in both charts.
 - **Network completeness:** every activity, including the documentation chain, is in the network; the test-first setup (WBS-10.1), the style guide (WBS-9.2), the API contract (WBS-1.2), and staging (WBS-11.2) are predecessors of every activity that needs them.
-- **Course deadlines:** development ends on 2026-12-20, 5 days before the code freeze on 2026-12-25, and every document activity ends on its course deadline; the AI usage report and presentation (WBS-12.5) start after the release and the Test Specification.
+- **Course deadlines:** development ends on 2026-12-21, 4 days before the code freeze on 2026-12-25, and every document activity ends on its course deadline; the AI usage report and presentation (WBS-12.5) start after the release and the Test Specification.
 
 ---
 
@@ -695,7 +769,7 @@ Probability and impact are scored from **1 (lowest)** to **5 (highest)**. The ri
 | R-05 | AI-generated code introduces defects or security problems that are not noticed. | 3 | 3 | 9 | WBS-2.1, WBS-2.2, WBS-5.1, WBS-6.1, WBS-10.3 |
 | R-06 | The join request flow (requests, matches, end-of-day deletion) and the real-time chat are more complex than estimated. | 3 | 4 | 12 | WBS-5.2, WBS-5.3b, WBS-6.1 |
 | R-07 | The mobile application and the backend do not fit together (different API contract), which causes integration delays. | 3 | 4 | 12 | WBS-2.3b, WBS-4.3b, WBS-5.3b, WBS-6.2b, WBS-10.2b |
-| R-08 | The customer changes or adds requirements during the project. | 4 | 3 | 12 | WBS-4.2, WBS-5.1, WBS-5.3b, WBS-8.2b |
+| R-08 | The customer changes or adds requirements during the project. (Occurred: the review of the Requirements Specification in PR #11, issue #20; handled in v1.4.) | 4 | 3 | 12 | WBS-4.2, WBS-5.1, WBS-5.3b, WBS-8.2b, WBS-2.4, WBS-2.5, WBS-4.4, WBS-5.4, WBS-8.3, WBS-8.4 |
 | R-09 | Members are less available because of the midterm exam and other courses, which delays critical activities. | 4 | 4 | 16 | WBS-5.2, WBS-6.1, WBS-10.2b |
 
 | Impact ↓ / Probability → | 1 (Very low) | 2 (Low) | 3 (Medium) | 4 (High) | 5 (Very high) |
@@ -715,7 +789,7 @@ Probability and impact are scored from **1 (lowest)** to **5 (highest)**. The ri
 | R-03 | WBS-1.3, WBS-7.1, WBS-7.2 | Test on both platforms from the first week; follow Expo's notification guide. | Enes Durukan | Show notifications as in-app alerts on the affected platform. |
 | R-04 | WBS-1.1, WBS-1.3, WBS-6.1, WBS-6.2b | Short learning spikes in week 1, pair programming on new technologies, and code reviews by the area leads. | Mohammed Alashi | Move members from activities with slack to the delayed activity, and simplify the feature (e.g., polling instead of WebSocket). |
 | R-05 | WBS-2.1, WBS-2.2, WBS-5.1, WBS-6.1, WBS-10.3 | Every AI output goes through a pull request review and must pass tests; security-sensitive code (authentication, authorization) is reviewed by two members. | İbrahim Meral | Revert the change, add a regression test, and record the error in the AI usage report. |
-| R-06 | WBS-5.2, WBS-5.3b, WBS-6.1 | Start the feed API right after the schema, develop the request states test-first, and agree on the request and match states before the mobile screens are built. | Mohammed Alashi | Simplify the first version (e.g., fewer request states), and use the 5-day buffer before the code freeze. |
+| R-06 | WBS-5.2, WBS-5.3b, WBS-6.1 | Start the feed API right after the schema, develop the request states test-first, and agree on the request and match states before the mobile screens are built. | Mohammed Alashi | Simplify the first version (e.g., fewer request states), and use the 4-day buffer before the code freeze. |
 | R-07 | WBS-2.3b, WBS-4.3b, WBS-5.3b, WBS-6.2b, WBS-10.2b | Draft the API contract (OpenAPI) together with the database schema (WBS-1.2) before any feature work, build the screens with mock data that follows it, and connect them to the staging environment (ready from the second week, WBS-11.2) in separate integration activities. | Erinç Özarı | Fix the contract in a joint session of the mobile and backend leads; add contract tests. |
-| R-08 | WBS-4.2, WBS-5.1, WBS-5.3b, WBS-8.2b | Record each request as a `customer-requests` issue within 48 hours, estimate it, and plan it against the buffer. | Enes Durukan | Defer or decline the request with a written reason (scope, time) and close it as "not planned". |
+| R-08 | WBS-4.2, WBS-5.1, WBS-5.3b, WBS-8.2b, WBS-2.4, WBS-2.5, WBS-4.4, WBS-5.4, WBS-8.3, WBS-8.4 | Record each request as a `customer-requests` issue within 48 hours, estimate it, and plan it against the buffer. The requests of issue #20 used the capacity buffer and the slack of the development chain (v1.4), so further requests are first checked against the 4-day buffer before the code freeze. | Enes Durukan | Defer or decline the request with a written reason (scope, time) and close it as "not planned". |
 | R-09 | WBS-5.2, WBS-6.1, WBS-10.2b | Plan around the midterm week, track progress weekly on the board, and keep the buffer before the code freeze. | Enes Durukan | Move work to members with slack, use pair programming, and drop optional scope items first. |
