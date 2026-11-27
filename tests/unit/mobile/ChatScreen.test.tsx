@@ -65,7 +65,7 @@ test("a sent message appears with its time and the input is cleared", async () =
 test("the message input moves up with the keyboard", async () => {
   await render(tree());
 
-  const avoider = screen.getByTestId("chat-keyboard-avoider");
+  const avoider = screen.getByTestId("page-keyboard-avoider");
   expect(within(avoider).getByLabelText("Chat message")).toBeTruthy();
   expect(within(avoider).getByRole("button", { name: "Send message" })).toBeTruthy();
 });
