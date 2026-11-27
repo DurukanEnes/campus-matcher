@@ -23,24 +23,24 @@ CampusMatcher is a mobile application that enables members of Istanbul Technical
 The application belongs to the domain of social networking and campus life within higher education. The key users are İTÜ members (students and staff) who wish to share daily campus activities with peers, together with system administrators who are responsible for moderation and platform management.
 
 ### In-Scope
-* **User Registration and Authentication:** Account creation restricted to verified İTÜ e-mail addresses (`@itu.edu.tr`) of students and staff, secure login, and token-based session management.
+* **User Registration and Authentication:** Account creation restricted to verified İTÜ e-mail addresses (`@itu.edu.tr`) of students and staff, secure login, token-based session management, password reset, account deletion, and limits on verification codes and login attempts.
 * **Role-Based Authorization:** Distinct permissions for members (students and staff) and administrators.
 * **User Profile Management:** Management of basic profile information, faculty/department, interests, and activity preferences (e.g., workout type, study subject).
 * **Home Screen:** Two main actions, Add Activity and Join Activity. The application does not use swipe-based matching.
 * **Activity Posts (Add Activity):** Creation, editing, and deletion of activity posts that specify the activity category (library, gym, cafeteria), the campus venue, the planned date and time window, and an optional short note (e.g., "Library, 30 October, 19:00–23:00"). The venue is selected from a predefined list of İTÜ campus locations; the device's GPS location is not used.
 * **Activity Feed (Join Activity):** A social-media-style feed that lists the open posts of other users with their details, with filters for activity category and hour.
-* **Join Requests and Matching:** A user opens a post in the feed and sends the post owner a join request with a message. The owner accepts or declines the request; an accepted request is a match, and the matched post is closed and no longer shown in the feed. For example, Enes publishes a library post, Ahmet finds it in the feed and sends a request, Enes accepts it, and the post leaves the feed. A match exists only for a single post and does not create a lasting connection between users; the application has no friend system.
+* **Join Requests and Matching:** A user opens a post in the feed and sends the post owner a join request with a message. The owner accepts or declines the request; an accepted request is a match, and the matched post is closed and no longer shown in the feed. For example, Enes publishes a library post, Ahmet finds it in the feed and sends a request, Enes accepts it, and the post leaves the feed. A requester can withdraw a pending request, and either user can cancel a match before the activity starts, which opens the post again. A match exists only for a single post and does not create a lasting connection between users; the application has no friend system.
 * **In-App Messaging:** A text-based chat between the post owner and the requesting user, starting with the join request message. The chat belongs to the activity, and the users agree on the exact meeting point (e.g., "second floor, near the entrance") in it.
-* **End-of-Day Deletion:** Every day at 23:59, all activities planned for that day are deleted automatically together with their join requests and chats. Activities planned for later days are kept; for example, at the end of 30 October, a post for 3 November created on 30 October is not deleted.
-* **Notifications:** Push notifications for new join requests, request responses (accepted or declined), and incoming messages.
-* **Safety and Moderation:** Blocking and reporting users, and an administrator panel for reviewing reports and suspending accounts.
+* **End-of-Day Deletion:** Every day at 23:59, all activities planned for that day are deleted automatically together with their join requests and chats, also a chat that is still in use; a time window therefore cannot cross midnight. Activities planned for later days are kept; for example, at the end of 30 October, a post for 3 November created on 30 October is not deleted. The only exception is the evidence of an open report, which is kept until the report is handled, at most 7 days.
+* **Notifications:** Push notifications for new join requests, request responses (accepted or declined), cancelled matches, and incoming messages.
+* **Safety and Moderation:** Blocking, unblocking, and reporting users (a block also ends the existing requests, matches, and chats between the two users), and an administrator panel for reviewing reports and suspending accounts for 1 day, 7 days, or permanently. The first administrator is created by the team at deployment.
 * **Service-Based Backend and Cloud Deployment:** A REST API offered by the backend services, hosted on a cloud platform with a relational database.
 
 ### Out-of-Scope
 * GPS and device location services, including real-time location tracking, live location sharing, map views, and distance-based matching. Location is limited to the campus venue selected in the activity post, and the exact meeting point is shared by the users in the chat.
 * Automatic or swipe-based matching (e.g., swiping left or right on user profiles); users choose posts themselves in the feed.
 * A friend system (sending friend requests, adding or removing friends, or keeping a friend list) and any other persistent social connection between users.
-* Keeping activities or chats after the end of their planned day (no activity or chat history).
+* Keeping activities or chats after the end of their planned day (no activity or chat history), except the evidence of an open report described above.
 * Dating or romantic matching features.
 * Voice and video calling.
 * Integration with official university systems (student information system, campus card, facility reservation systems).
