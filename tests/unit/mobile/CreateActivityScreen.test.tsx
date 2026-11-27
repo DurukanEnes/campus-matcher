@@ -92,6 +92,14 @@ test("a window that has already passed today is not published", async () => {
   expect(mockNavigate).not.toHaveBeenCalled();
 });
 
+test("a window that started earlier today is not published", async () => {
+  await renderCreate();
+  await fillPost({ venue: "Mustafa İnan Library", start: "14:00", end: "23:00" });
+
+  expect(screen.getByText("The start time has already passed. Choose a time from now on.")).toBeTruthy();
+  expect(mockNavigate).not.toHaveBeenCalled();
+});
+
 test("the preview shows the chosen details", async () => {
   await renderCreate();
   await fireEvent.press(screen.getByRole("button", { name: "Mustafa İnan Library" }));

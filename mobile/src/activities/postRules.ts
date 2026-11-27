@@ -43,6 +43,10 @@ function atMinutes(isoDate: string, minutes: number): Date {
   return new Date(year, month - 1, day, Math.floor(minutes / 60), minutes % 60);
 }
 
+function startOfMinute(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
+}
+
 export function validatePost(draft: PostDraft, now: Date): PostErrors {
   const errors: PostErrors = {};
   if (!draft.venue || !VENUES[draft.category].includes(draft.venue)) {
@@ -65,6 +69,9 @@ export function validatePost(draft: PostDraft, now: Date): PostErrors {
         : "The end time must be after the start time.";
   } else if (atMinutes(draft.date, end) <= now) {
     errors.end = "This time window has already passed. Choose a later time.";
+  } else if (atMinutes(draft.date, start) < startOfMinute(now)) {
+    // A post invites others to join, so it cannot start in the past (FR-07).
+    errors.start = "The start time has already passed. Choose a time from now on.";
   }
   return errors;
 }
