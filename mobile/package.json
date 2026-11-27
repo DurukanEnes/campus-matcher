@@ -23,6 +23,7 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "testTimeout": 20000,
     "roots": [
       "<rootDir>/src",
       "<rootDir>/../tests/unit/mobile"

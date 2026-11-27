@@ -218,14 +218,16 @@ export function Field({
   multiline = false,
   keyboardType,
   secureTextEntry = false,
+  error,
 }: {
   label: string;
   value: string;
   onChangeText: (value: string) => void;
   placeholder: string;
   multiline?: boolean;
-  keyboardType?: "default" | "email-address";
+  keyboardType?: "default" | "email-address" | "number-pad";
   secureTextEntry?: boolean;
+  error?: string;
 }) {
   return (
     <View style={styles.fieldGroup}>
@@ -239,9 +241,14 @@ export function Field({
         placeholder={placeholder}
         placeholderTextColor={colors.muted}
         secureTextEntry={secureTextEntry}
-        style={[styles.field, multiline ? styles.multilineField : null]}
+        style={[styles.field, multiline ? styles.multilineField : null, error ? styles.fieldInvalid : null]}
         value={value}
       />
+      {error ? (
+        <Text accessibilityRole="alert" style={styles.fieldError}>
+          {error}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -400,6 +407,8 @@ const styles = StyleSheet.create({
   avatar: { alignItems: "center", justifyContent: "center" },
   avatarText: { color: colors.ink, fontSize: typography.label, fontWeight: "800" },
   fieldGroup: { marginBottom: spacing.lg },
+  fieldInvalid: { borderColor: colors.danger },
+  fieldError: { color: colors.danger, fontSize: typography.caption, marginTop: spacing.sm },
   fieldLabel: { color: colors.ink, fontSize: typography.label, fontWeight: "700", marginBottom: spacing.sm },
   field: {
     minHeight: 50,
