@@ -4,6 +4,7 @@ import type { PropsWithChildren } from "react";
 export type ActivityCategory = "Library" | "Gym" | "Cafeteria";
 export type ActivityStatus = "open" | "matched";
 export type RequestStatus = "pending" | "accepted" | "declined";
+export type SendRequestResult = "sent" | "own-post" | "closed" | "duplicate" | "not-found";
 
 export type Activity = {
   id: string;
@@ -22,6 +23,7 @@ export type JoinRequest = {
   id: string;
   activityId: string;
   requester: string;
+  requesterDepartment: string;
   initials: string;
   message: string;
   status: RequestStatus;
@@ -42,7 +44,7 @@ type PrototypeState = {
   requests: JoinRequest[];
   profile: Profile;
   addActivity: (activity: NewActivity) => void;
-  sendRequest: (activityId: string, message: string) => void;
+  sendRequest: (activityId: string, message: string) => SendRequestResult;
   updateRequest: (requestId: string, status: Exclude<RequestStatus, "pending">) => void;
   updateProfile: (profile: Profile) => void;
 };
@@ -73,6 +75,30 @@ const initialActivities: Activity[] = [
     status: "open",
   },
   {
+    id: "activity-library-evening",
+    category: "Library",
+    venue: "Central Library",
+    date: "Today",
+    time: "19:00–23:00",
+    period: "Evening",
+    note: "Exam prep for Calculus II. Second floor, quiet zone.",
+    host: "Zeynep Arslan",
+    initials: "ZA",
+    status: "open",
+  },
+  {
+    id: "activity-gym-morning",
+    category: "Gym",
+    venue: "Ayazağa Campus Gym",
+    date: "Tomorrow",
+    time: "07:00–08:00",
+    period: "Morning",
+    note: "Early cardio before lectures.",
+    host: "Can Öztürk",
+    initials: "CÖ",
+    status: "open",
+  },
+  {
     id: "activity-cafe",
     category: "Cafeteria",
     venue: "Central Cafeteria",
@@ -91,8 +117,19 @@ const initialRequests: JoinRequest[] = [
     id: "request-demo",
     activityId: "activity-cafe",
     requester: "Deniz Aydın",
+    requesterDepartment: "Computer Engineering",
     initials: "DA",
     message: "Hi! I have a free hour after class. Mind if I join?",
+    status: "pending",
+    direction: "incoming",
+  },
+  {
+    id: "request-second",
+    activityId: "activity-cafe",
+    requester: "Selin Yıldız",
+    requesterDepartment: "Industrial Design",
+    initials: "SY",
+    message: "Lunch sounds great, I'm nearby at that time.",
     status: "pending",
     direction: "incoming",
   },
@@ -132,12 +169,17 @@ export function PrototypeProvider({ children }: PropsWithChildren) {
         ]);
       },
       sendRequest: (activityId, message) => {
+        const result = checkJoinRequest(activities, requests, activityId);
+        if (result !== "sent") {
+          return result;
+        }
         const id = `request-new-${nextId.current++}`;
         setRequests((current) => [
           {
             id,
             activityId,
             requester: "You",
+            requesterDepartment: profile.department,
             initials: "EO",
             message,
             status: "pending",
@@ -145,24 +187,33 @@ export function PrototypeProvider({ children }: PropsWithChildren) {
           },
           ...current,
         ]);
+        return result;
       },
       updateRequest: (requestId, status) => {
+        const request = requests.find((item) => item.id === requestId);
+        if (!request || request.status !== "pending") {
+          return;
+        }
         setRequests((current) =>
-          current.map((request) =>
-            request.id === requestId ? { ...request, status } : request,
-          ),
+          current.map((item) => {
+            if (item.id === requestId) {
+              return { ...item, status };
+            }
+            // FR-15: accepting one request declines the other pending requests for the same post.
+            if (status === "accepted" && item.activityId === request.activityId && item.status === "pending") {
+              return { ...item, status: "declined" };
+            }
+            return item;
+          }),
         );
         if (status === "accepted") {
-          const request = requests.find((item) => item.id === requestId);
-          if (request) {
-            setActivities((current) =>
-              current.map((activity) =>
-                activity.id === request.activityId
-                  ? { ...activity, status: "matched" }
-                  : activity,
-              ),
-            );
-          }
+          setActivities((current) =>
+            current.map((activity) =>
+              activity.id === request.activityId
+                ? { ...activity, status: "matched" }
+                : activity,
+            ),
+          );
         }
       },
       updateProfile: (nextProfile) => setProfile(nextProfile),
@@ -171,6 +222,25 @@ export function PrototypeProvider({ children }: PropsWithChildren) {
   );
 
   return <PrototypeContext.Provider value={value}>{children}</PrototypeContext.Provider>;
+}
+
+/** Mirrors the join request rules of FR-13 so the UI can show the same outcomes the API will return. */
+export function checkJoinRequest(
+  activities: Activity[],
+  requests: JoinRequest[],
+  activityId: string,
+): SendRequestResult {
+  const activity = activities.find((item) => item.id === activityId);
+  if (!activity) return "not-found";
+  if (activity.host === "You") return "own-post";
+  if (activity.status !== "open") return "closed";
+  const hasPending = requests.some(
+    (request) =>
+      request.activityId === activityId &&
+      request.direction === "outgoing" &&
+      request.status === "pending",
+  );
+  return hasPending ? "duplicate" : "sent";
 }
 
 export function usePrototypeData(): PrototypeState {

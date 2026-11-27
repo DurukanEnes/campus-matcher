@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import type { RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StyleSheet, Text, View } from "react-native";
 import { Avatar, Button, Card, Chip, Page, PageHeader, SectionTitle, Tag } from "../components/DesignSystem";
@@ -8,12 +9,14 @@ import type { RootStackParamList } from "../navigation/types";
 import { colors, radii, spacing, typography } from "../theme/tokens";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
+type RequestsRoute = RouteProp<RootStackParamList, "Requests">;
 type RequestTab = "Incoming" | "Sent";
 
 export default function RequestsScreen() {
   const navigation = useNavigation<Navigation>();
   const { activities, requests, updateRequest } = usePrototypeData();
-  const [tab, setTab] = useState<RequestTab>("Incoming");
+  const route = useRoute<RequestsRoute>();
+  const [tab, setTab] = useState<RequestTab>(route.params?.tab ?? "Incoming");
   const visibleRequests = useMemo(
     () => requests.filter((request) =>
       tab === "Incoming" ? request.direction === "incoming" : request.direction === "outgoing",
@@ -39,7 +42,9 @@ export default function RequestsScreen() {
               <Avatar initials={request.initials} size={46} tone={isIncoming ? "lavender" : "green"} />
               <View style={styles.requestIdentity}>
                 <Text style={styles.name}>{request.requester}</Text>
-                <Text style={styles.when}>{isIncoming ? "Wants to join your activity" : "Your request"}</Text>
+                <Text style={styles.when}>
+                  {isIncoming ? `${request.requesterDepartment} · İTÜ member` : `To ${activity?.host ?? "the host"}`}
+                </Text>
               </View>
               <Tag
                 label={request.status.toUpperCase()}
@@ -63,6 +68,8 @@ export default function RequestsScreen() {
                 />
                 <Button label="Decline" variant="quiet" onPress={() => updateRequest(request.id, "declined")} />
               </View>
+            ) : request.status === "pending" ? (
+              <Text style={styles.waiting}>Waiting for {activity?.host ?? "the host"} to answer.</Text>
             ) : request.status === "accepted" ? (
               <Button label="Open activity chat" variant="secondary" onPress={() => navigation.navigate("Chat", { activityId: request.activityId })} />
             ) : null}
@@ -93,6 +100,7 @@ const styles = StyleSheet.create({
   activityTime: { color: colors.muted, fontSize: typography.caption, marginTop: spacing.xs },
   message: { color: colors.ink, fontSize: typography.label, lineHeight: 21, marginVertical: spacing.lg },
   actions: { gap: spacing.xs },
+  waiting: { color: colors.muted, fontSize: typography.caption },
   empty: { alignItems: "center", padding: spacing.xxxl, borderRadius: radii.lg, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
   emptyGlyph: { color: colors.primary, fontSize: 30, marginBottom: spacing.md },
   emptyTitle: { color: colors.ink, fontSize: typography.heading, fontWeight: "700", textAlign: "center" },
