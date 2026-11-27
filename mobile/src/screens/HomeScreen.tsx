@@ -9,7 +9,17 @@ import type { RootStackParamList } from "../navigation/types";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
-export default function HomeScreen() {
+const WEEKDAYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+const MONTHS = [
+  "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+  "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER",
+];
+
+function todayLabel(date: Date): string {
+  return `${WEEKDAYS[date.getDay()]}, ${MONTHS[date.getMonth()]} ${date.getDate()}`;
+}
+
+export default function HomeScreen({ now = () => new Date() }: { now?: () => Date }) {
   const navigation = useNavigation<Navigation>();
   const { activities, requests } = usePrototypeData();
   const myActivities = activities.filter((activity) => activity.host === "You");
@@ -40,7 +50,7 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.greeting}>
-        <Text style={styles.overline}>MONDAY, NOVEMBER 17</Text>
+        <Text style={styles.overline}>{todayLabel(now())}</Text>
         <Text style={styles.headline}>Make today a little{`\n`}less solo.</Text>
         <Text style={styles.intro}>
           Find your people for the small campus moments.
@@ -56,14 +66,14 @@ export default function HomeScreen() {
         </Text>
         <View style={styles.heroActions}>
           <Button
-            label="Explore activities"
+            label="Join Activity"
             icon="↗"
             variant="secondary"
             onPress={() => navigation.navigate("ActivityFeed")}
           />
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Create activity"
+            accessibilityLabel="Add Activity"
             onPress={() => navigation.navigate("CreateActivity")}
             style={styles.addButton}
           >
