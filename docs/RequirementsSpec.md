@@ -22,7 +22,7 @@
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-11-06 | First version of the Requirements Specification, based on Project Charter v1.1 and Project Plan v1.3. |
-| 1.1 | 2026-11-27 | Revision after the customer (TA) review of PR #11. The changes are listed in the next table. |
+| 1.1 | 2026-11-27 | Revision after the customer (TA) review of PR #11. The changes are listed in the next table. The user stories are linked to the new activities of Project Plan v1.4. |
 
 ### Changes in v1.1 (customer review of PR #11)
 
@@ -50,6 +50,7 @@ The requirements in this document follow the latest Project Plan. The table list
 | 1.1 | 2026-10-29 | Each mobile activity is split into a UI part built with mock data and an integration part that depends on its backend activity. The schedule is levelled so that no member works on two development activities at the same time, and staging (WBS-11.2) moves to the second week. | Customer (TA) feedback on dependencies and workload | — (schedule) |
 | 1.1 | 2026-10-29 | The venue catalog (WBS-4.1) moves to Mohammed Alashi, the block/report/suspension API (WBS-8.1) moves to Ali Çetin, and all five members join WBS-10.3. | Workload balancing | — (resources) |
 | 1.2 | 2026-11-02 | The member-to-activity assignment table (Section 4.2) shows each activity with its members, dates, and dependencies in one table. | Team decision | — (format) |
+| 1.4 | 2026-11-27 | Six activities are added for the customer requests of the Requirements Specification review: WBS-2.4 (account security), WBS-2.5 (account and chat change screens), WBS-4.4 (post rule and report retention), WBS-5.4 (withdraw, cancel, and account deletion), WBS-8.3 (suspension and unblock), and WBS-8.4 (request and moderation change screens). WBS-10.3 runs at 0.4 FTE per member, and the release moves to 2026-12-21. | Customer (TA) review of PR #11 (issue #20) | FR-01, FR-02, FR-07, FR-16, FR-20, FR-22, FR-23, FR-24 to FR-35, NFR-15 |
 | 1.3 | 2026-11-05 | The test-first setup (WBS-10.1) and the style guide (WBS-9.2) become predecessors of the development activities; the API contract is defined together with the database schema in WBS-1.2; missing staging and feed dependencies are added; the documentation chain becomes part of the schedule network. | Customer (TA) review of the Project Plan | — (schedule; no requirement changes) |
 
 ---
@@ -58,7 +59,7 @@ The requirements in this document follow the latest Project Plan. The table list
 
 **Project overview:** CampusMatcher is a mobile application (Android and iOS) for the members of Istanbul Technical University (İTÜ), both students and staff. It helps them find companions for everyday campus activities such as studying at the library, working out at the gym, or eating at the cafeteria. A user either publishes an activity post (**Add Activity**) with a category, an İTÜ venue, a planned date, and a time window, or browses the feed of other users' posts (**Join Activity**) and sends the post owner a join request with a message. When the owner accepts the request, the two users are matched and agree on the exact meeting point in a chat that belongs to the activity. At the end of each day, the activities planned for that day are deleted together with their chats. Administrators keep the platform safe by reviewing reports and suspending accounts.
 
-**Purpose of this document:** This document specifies what CampusMatcher shall do (functional requirements) and the quality constraints it shall meet (non-functional requirements), and describes how its users interact with it through user types, personas, scenarios, user stories, use case diagrams, and detailed use cases. It is written for the customer (TA), the instructors, and the development team: it is the basis for the Requirements Analysis, the Design Specification, and the acceptance tests. Every requirement is linked to a task (`T-##`), a deliverable (`D-##`), and the work-breakdown activities (`WBS-#.#`) of Project Plan v1.3.
+**Purpose of this document:** This document specifies what CampusMatcher shall do (functional requirements) and the quality constraints it shall meet (non-functional requirements), and describes how its users interact with it through user types, personas, scenarios, user stories, use case diagrams, and detailed use cases. It is written for the customer (TA), the instructors, and the development team: it is the basis for the Requirements Analysis, the Design Specification, and the acceptance tests. Every requirement is linked to a task (`T-##`), a deliverable (`D-##`), and the work-breakdown activities (`WBS-#.#`) of Project Plan v1.4.
 
 **Writing conventions:** Following the course guidelines, every requirement has a unique ID and a source. **"shall"** marks a mandatory requirement and **"should"** a desirable one. Priorities use the MoSCoW scale: **Must** (required for the release), **Should** (important but not blocking), **Could** (only if time allows), and **Won't** (out of scope for this release). A requirement is **Must** only if the core flow (register, publish, join, match, chat, end-of-day deletion) or the safety of the members does not work without it. A Must requirement uses "shall", and a Should or Could requirement uses "should".
 
@@ -243,7 +244,7 @@ Mert has not opened the app for two weeks and cannot remember his password. Afte
 
 #### User Stories Linked to the Project Plan
 
-Each user-facing WBS activity of Project Plan v1.3 is linked to a user story. A feature usually has a backend activity, a mobile UI activity (a), and a mobile integration activity (b); all of them implement the same user story. Technical activities without a user of their own are explained in the table.
+Each user-facing WBS activity of Project Plan v1.4 is linked to a user story. A feature usually has a backend activity, a mobile UI activity (a), and a mobile integration activity (b); all of them implement the same user story. Technical activities without a user of their own are explained in the table.
 
 | Scenario ID | Project Plan WBS activity ID | User story | Related requirement ID(s) |
 |---|---|---|---|
@@ -251,20 +252,20 @@ Each user-facing WBS activity of Project Plan v1.3 is linked to a user story. A 
 | SC-01 | WBS-2.1, WBS-2.3a, WBS-2.3b | **US-01:** As an İTÜ member, I want to register with my İTÜ e-mail address so that only verified İTÜ members can use the platform. | FR-01, FR-02 |
 | SC-01 | WBS-2.2, WBS-2.3a, WBS-2.3b | **US-02:** As a member, I want to log in and stay signed in so that I can use the app without entering my password every time. | FR-03, FR-04 |
 | SC-01 | WBS-3.1, WBS-3.2a, WBS-3.2b | **US-03:** As a member, I want to keep my profile up to date so that other members know who they are meeting. | FR-05, FR-34 |
-| SC-02 | WBS-4.1, WBS-4.2, WBS-4.3a, WBS-4.3b | **US-04:** As a member, I want to publish an activity with a venue and a time window so that others who will be there at the same time can join me. | FR-06, FR-07, FR-35 |
-| SC-02, SC-07 | WBS-4.2, WBS-4.3b | **US-05:** As a post owner, I want to edit or delete my posts so that my plans in the app stay correct. | FR-08, FR-28 |
+| SC-02 | WBS-4.1, WBS-4.2, WBS-4.3a, WBS-4.3b, WBS-4.4 | **US-04:** As a member, I want to publish an activity with a venue and a time window so that others who will be there at the same time can join me. | FR-06, FR-07, FR-35 |
+| SC-02, SC-07 | WBS-4.2, WBS-4.3b, WBS-5.4, WBS-8.4 | **US-05:** As a post owner, I want to edit or delete my posts so that my plans in the app stay correct. | FR-08, FR-28 |
 | SC-05 | WBS-4.2 | **US-06:** As a member, I want the activities of a day and their chats to be deleted at the end of that day so that no history of where I have been is kept. | FR-09 |
 | SC-03 | WBS-5.1, WBS-5.3a, WBS-5.3b | **US-07:** As a member, I want to browse and filter the feed by activity and hour so that I can quickly find an activity that fits my plan. | FR-10, FR-11, FR-12 |
 | SC-03 | WBS-5.2, WBS-5.3a, WBS-5.3b | **US-08:** As a member, I want to send a join request with a message so that the post owner knows why I want to join. | FR-13 |
 | SC-04 | WBS-5.2, WBS-5.3a, WBS-5.3b | **US-09:** As a post owner, I want to accept or decline join requests so that I decide who joins my activity. | FR-14, FR-15 |
-| SC-04 | WBS-6.1, WBS-6.2a, WBS-6.2b | **US-10:** As a matched member, I want to chat with the other member so that we can agree on the exact meeting point. | FR-16, FR-17, FR-33 |
+| SC-04 | WBS-6.1, WBS-6.2a, WBS-6.2b, WBS-2.5 | **US-10:** As a matched member, I want to chat with the other member so that we can agree on the exact meeting point. | FR-16, FR-17, FR-33 |
 | SC-03, SC-04 | WBS-7.1, WBS-7.2 | **US-11:** As a member, I want to receive notifications about requests and messages so that I can answer in time. | FR-18, FR-19 |
-| SC-06 | WBS-8.1, WBS-8.2a, WBS-8.2b | **US-12:** As a member, I want to block another member so that they can no longer see my posts or contact me. | FR-20, FR-30 |
-| SC-06 | WBS-8.1, WBS-8.2a, WBS-8.2b | **US-13:** As a member, I want to report a member or a post so that administrators can act against misuse. | FR-21, FR-29 |
-| SC-06 | WBS-2.2, WBS-8.1, WBS-8.2a, WBS-8.2b | **US-14:** As an administrator, I want to review reports and suspend accounts so that the platform stays safe. | FR-22, FR-23, FR-29, FR-31, FR-32 |
-| SC-08 | WBS-2.1, WBS-2.2, WBS-2.3a, WBS-2.3b | **US-15:** As a member who forgot my password, I want to reset it with a code sent to my İTÜ address so that I can use my account again. | FR-24, NFR-15 |
-| — | WBS-3.1, WBS-3.2a, WBS-3.2b | **US-16:** As a member, I want to delete my account so that my personal data is removed when I stop using the app. | FR-25 |
-| SC-07 | WBS-5.2, WBS-5.3a, WBS-5.3b | **US-17:** As a requester or a post owner, I want to withdraw a request or cancel a match so that the other member knows early that my plans have changed. | FR-26, FR-27 |
+| SC-06 | WBS-8.1, WBS-8.2a, WBS-8.2b, WBS-5.4, WBS-8.3, WBS-8.4 | **US-12:** As a member, I want to block another member so that they can no longer see my posts or contact me. | FR-20, FR-30 |
+| SC-06 | WBS-8.1, WBS-8.2a, WBS-8.2b, WBS-4.4, WBS-8.4 | **US-13:** As a member, I want to report a member or a post so that administrators can act against misuse. | FR-21, FR-29 |
+| SC-06 | WBS-8.1, WBS-8.2a, WBS-8.2b, WBS-8.3, WBS-8.4 | **US-14:** As an administrator, I want to review reports and suspend accounts so that the platform stays safe. | FR-22, FR-23, FR-29, FR-31, FR-32 |
+| SC-08 | WBS-2.4, WBS-2.5 | **US-15:** As a member who forgot my password, I want to reset it with a code sent to my İTÜ address so that I can use my account again. | FR-24, NFR-15 |
+| — | WBS-5.4, WBS-2.5 | **US-16:** As a member, I want to delete my account so that my personal data is removed when I stop using the app. | FR-25 |
+| SC-07 | WBS-5.4, WBS-8.4 | **US-17:** As a requester or a post owner, I want to withdraw a request or cancel a match so that the other member knows early that my plans have changed. | FR-26, FR-27 |
 | — | WBS-9.1, WBS-9.2 | UI/UX design (wireframes, prototype, style guide); no user story of its own. It defines the screens of US-01 to US-17 and is checked by NFR-08 and NFR-09. | NFR-08, NFR-09 |
 | — | WBS-10.1, WBS-10.2a, WBS-10.2b, WBS-10.3 | Testing activities; no user story. WBS-10.2a turns the acceptance criteria below into end-to-end tests. | NFR-03, NFR-05 to NFR-07, NFR-11 |
 | — | WBS-11.1, WBS-11.2, WBS-11.3 | CI/CD and deployment; no user story. | NFR-02, NFR-10, NFR-14 |
@@ -371,7 +372,7 @@ Scenario: Reject a time window that crosses midnight
 ```
 
 **US-05 — Edit or delete own posts**
-- **Priority:** Must · **Estimate:** part of WBS-4.2 (M) and WBS-4.3b (S)
+- **Priority:** Must · **Estimate:** part of WBS-4.2 (M) and WBS-4.3b (S); deleting a closed post: part of WBS-5.4 (S) and WBS-8.4 (S)
 - **Story:** As a post owner, I want to edit or delete my posts so that my plans in the app stay correct.
 
 ```gherkin
@@ -517,7 +518,7 @@ Scenario: Keep the evidence after the end-of-day deletion
 ```
 
 **US-14 — Review reports and suspend accounts**
-- **Priority:** Must (giving the administrator role in the app, FR-32: Could) · **Estimate:** WBS-8.1 (M), WBS-8.2a (S), WBS-8.2b (S); the first-administrator command is part of WBS-2.2 (M)
+- **Priority:** Must (giving the administrator role in the app, FR-32: Could) · **Estimate:** WBS-8.1 (M), WBS-8.2a (S), WBS-8.2b (S); suspension durations, unblock, and the first-administrator command are WBS-8.3 (T) and WBS-8.4 (S)
 - **Story:** As an administrator, I want to review reports and suspend accounts so that the platform stays safe.
 
 ```gherkin
@@ -541,7 +542,7 @@ Scenario: A member cannot open the report list
 ```
 
 **US-15 — Reset a forgotten password**
-- **Priority:** Must · **Estimate:** part of WBS-2.1 (M), WBS-2.2 (M), WBS-2.3a (S), and WBS-2.3b (S)
+- **Priority:** Must · **Estimate:** part of WBS-2.4 (S) and WBS-2.5 (S)
 - **Story:** As a member who forgot my password, I want to reset it with a code sent to my İTÜ address so that I can use my account again.
 - **Constraints:** The reset code follows the limits of FR-02; the new password follows the rule of FR-01.
 
@@ -555,7 +556,7 @@ Scenario: Reset the password
 ```
 
 **US-16 — Delete my account**
-- **Priority:** Should · **Estimate:** part of WBS-3.1 (S), WBS-3.2a (T), and WBS-3.2b (T)
+- **Priority:** Should · **Estimate:** part of WBS-5.4 (S) and WBS-2.5 (S)
 - **Story:** As a member, I want to delete my account so that my personal data is removed when I stop using the app.
 
 ```gherkin
@@ -568,7 +569,7 @@ Scenario: Delete the account
 ```
 
 **US-17 — Withdraw a request or cancel a match**
-- **Priority:** Must · **Estimate:** part of WBS-5.2 (M), WBS-5.3a (M), and WBS-5.3b (M)
+- **Priority:** Must · **Estimate:** part of WBS-5.4 (S) and WBS-8.4 (S)
 - **Story:** As a requester or a post owner, I want to withdraw a request or cancel a match so that the other member knows early that my plans have changed.
 - **Constraints:** A match can be cancelled only before the time window starts.
 
