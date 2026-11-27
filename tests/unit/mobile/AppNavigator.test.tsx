@@ -2,9 +2,15 @@ import { render, screen } from "@testing-library/react-native";
 import AppNavigator from "../../../mobile/src/navigation/AppNavigator";
 
 jest.mock("@react-navigation/native", () => ({
+  createNavigationContainerRef: () => ({ isReady: () => false, navigate: jest.fn() }),
   NavigationContainer: ({ children }: { children: React.ReactNode }) => children,
   useNavigation: () => ({ navigate: jest.fn(), goBack: jest.fn() }),
   useRoute: () => ({ params: { activityId: "activity-library" } }),
+}));
+
+// Push handling needs native modules; it has its own tests in notifications.test.tsx.
+jest.mock("../../../mobile/src/notifications/PushNotifications", () => ({
+  PushNotifications: () => null,
 }));
 
 jest.mock("@react-navigation/native-stack", () => ({
