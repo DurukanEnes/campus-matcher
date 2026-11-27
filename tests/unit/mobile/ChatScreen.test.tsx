@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen, within } from "@testing-library/react-native";
 import { Pressable, Text } from "react-native";
 import { ChatProvider } from "../../../mobile/src/chat/ChatContext";
 import { MAX_MESSAGE_LENGTH } from "../../../mobile/src/chat/chatRules";
@@ -60,6 +60,14 @@ test("a sent message appears with its time and the input is cleared", async () =
   expect(screen.getByLabelText("You: Second floor, near the entrance")).toBeTruthy();
   expect(screen.getByText("15:00")).toBeTruthy();
   expect(screen.getByLabelText("Chat message").props.value).toBe("");
+});
+
+test("the message input moves up with the keyboard", async () => {
+  await render(tree());
+
+  const avoider = screen.getByTestId("chat-keyboard-avoider");
+  expect(within(avoider).getByLabelText("Chat message")).toBeTruthy();
+  expect(within(avoider).getByRole("button", { name: "Send message" })).toBeTruthy();
 });
 
 test("an empty message cannot be sent", async () => {
