@@ -75,8 +75,19 @@ describe("validatePost", () => {
     );
   });
 
-  test("accepts a window that has started but not ended", () => {
-    expect(validatePost({ ...draft, start: "14:00", end: "16:00" }, now)).toEqual({});
+  test("rejects a window that has already started", () => {
+    expect(validatePost({ ...draft, start: "14:00", end: "16:00" }, now).start).toBe(
+      "The start time has already passed. Choose a time from now on.",
+    );
+  });
+
+  test("accepts a window that starts now", () => {
+    expect(validatePost({ ...draft, start: "15:00", end: "16:00" }, now)).toEqual({});
+  });
+
+  test("accepts a window that starts in the current minute", () => {
+    const nowWithSeconds = new Date(2026, 10, 27, 15, 0, 45);
+    expect(validatePost({ ...draft, start: "15:00", end: "16:00" }, nowWithSeconds)).toEqual({});
   });
 
   test("accepts an early window on a later day", () => {

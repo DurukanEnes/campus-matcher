@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useChat } from "../chat/ChatContext";
 import { chatState, firstMessage, formatClock, validateMessage } from "../chat/chatRules";
 import { Avatar, Button, Page, PageHeader, Tag } from "../components/DesignSystem";
@@ -62,75 +62,79 @@ export default function ChatScreen({ now = () => new Date() }: { now?: () => Dat
 
   return (
     <Page showTabs={false} scrollable={false}>
-      <PageHeader title={otherName} subtitle={`${activity.category} · ${activity.venue}`} onBack={() => navigation.goBack()} />
-      <View style={styles.activityBanner}>
-        <Text style={styles.activityGlyph}>✳</Text>
-        <View style={styles.activityText}>
-          <Text style={styles.activityTitle}>{activity.date} · {activity.time}</Text>
-          <Text style={styles.activitySubtitle}>{activity.venue}</Text>
-        </View>
-        <Tag label={statusTags[request.status]} />
-      </View>
-      <View style={styles.chatNotice}>
-        <Text style={styles.noticeGlyph}>◎</Text>
-        <Text style={styles.noticeText}>Agree on an exact meeting point here. No location sharing.</Text>
-      </View>
-      <ScrollView style={styles.messages} contentContainerStyle={styles.messageList} showsVerticalScrollIndicator={false}>
-        <Text style={styles.dayDivider}>{activity.date.toUpperCase()}</Text>
-        {messages.map((message) => (
-          <View
-            key={message.id}
-            accessible
-            accessibilityLabel={`${message.mine ? "You" : otherName}: ${message.text}`}
-            style={[styles.messageRow, message.mine ? styles.mineRow : null]}
-          >
-            {!message.mine ? <Avatar initials={otherInitials} size={30} tone="lavender" /> : null}
-            <View style={[styles.bubble, message.mine ? styles.mineBubble : styles.theirBubble]}>
-              <Text style={[styles.messageText, message.mine ? styles.mineText : null]}>{message.text}</Text>
-              <Text style={[styles.messageTime, message.mine ? styles.mineTime : null]}>{message.time}</Text>
-            </View>
+      {/* Android apps are edge-to-edge, so the window does not resize for the keyboard;
+          "padding" on both platforms keeps the input above it (Expo keyboard handling guide). */}
+      <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoider} testID="chat-keyboard-avoider">
+        <PageHeader title={otherName} subtitle={`${activity.category} · ${activity.venue}`} onBack={() => navigation.goBack()} />
+        <View style={styles.activityBanner}>
+          <Text style={styles.activityGlyph}>✳</Text>
+          <View style={styles.activityText}>
+            <Text style={styles.activityTitle}>{activity.date} · {activity.time}</Text>
+            <Text style={styles.activitySubtitle}>{activity.venue}</Text>
           </View>
-        ))}
-      </ScrollView>
-      {state === "read-only" ? (
-        <View style={styles.readOnly}>
-          <Text style={styles.readOnlyText}>This request was declined. The chat is read-only.</Text>
+          <Tag label={statusTags[request.status]} />
         </View>
-      ) : (
-        <>
-          {error ? (
-            <Text accessibilityRole="alert" style={styles.error}>
-              {error}
-            </Text>
-          ) : null}
-          <View style={styles.composer}>
-            <TextInput
-              accessibilityLabel="Chat message"
-              onChangeText={(value) => {
-                setDraft(value);
-                setError(undefined);
-              }}
-              onSubmitEditing={send}
-              placeholder="Write a message…"
-              placeholderTextColor={colors.muted}
-              returnKeyType="send"
-              style={styles.input}
-              value={draft}
-            />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Send message"
-              accessibilityState={{ disabled: !canSend }}
-              disabled={!canSend}
-              onPress={send}
-              style={[styles.sendButton, canSend ? null : styles.sendDisabled]}
+        <View style={styles.chatNotice}>
+          <Text style={styles.noticeGlyph}>◎</Text>
+          <Text style={styles.noticeText}>Agree on an exact meeting point here. No location sharing.</Text>
+        </View>
+        <ScrollView style={styles.messages} contentContainerStyle={styles.messageList} showsVerticalScrollIndicator={false}>
+          <Text style={styles.dayDivider}>{activity.date.toUpperCase()}</Text>
+          {messages.map((message) => (
+            <View
+              key={message.id}
+              accessible
+              accessibilityLabel={`${message.mine ? "You" : otherName}: ${message.text}`}
+              style={[styles.messageRow, message.mine ? styles.mineRow : null]}
             >
-              <Text style={styles.sendGlyph}>↑</Text>
-            </Pressable>
+              {!message.mine ? <Avatar initials={otherInitials} size={30} tone="lavender" /> : null}
+              <View style={[styles.bubble, message.mine ? styles.mineBubble : styles.theirBubble]}>
+                <Text style={[styles.messageText, message.mine ? styles.mineText : null]}>{message.text}</Text>
+                <Text style={[styles.messageTime, message.mine ? styles.mineTime : null]}>{message.time}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+        {state === "read-only" ? (
+          <View style={styles.readOnly}>
+            <Text style={styles.readOnlyText}>This request was declined. The chat is read-only.</Text>
           </View>
-        </>
-      )}
-      <Text style={styles.expiry}>Activity, requests, and chat are cleared at 23:59 on the planned day.</Text>
+        ) : (
+          <>
+            {error ? (
+              <Text accessibilityRole="alert" style={styles.error}>
+                {error}
+              </Text>
+            ) : null}
+            <View style={styles.composer}>
+              <TextInput
+                accessibilityLabel="Chat message"
+                onChangeText={(value) => {
+                  setDraft(value);
+                  setError(undefined);
+                }}
+                onSubmitEditing={send}
+                placeholder="Write a message…"
+                placeholderTextColor={colors.muted}
+                returnKeyType="send"
+                style={styles.input}
+                value={draft}
+              />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Send message"
+                accessibilityState={{ disabled: !canSend }}
+                disabled={!canSend}
+                onPress={send}
+                style={[styles.sendButton, canSend ? null : styles.sendDisabled]}
+              >
+                <Text style={styles.sendGlyph}>↑</Text>
+              </Pressable>
+            </View>
+          </>
+        )}
+        <Text style={styles.expiry}>Activity, requests, and chat are cleared at 23:59 on the planned day.</Text>
+      </KeyboardAvoidingView>
     </Page>
   );
 }
@@ -144,7 +148,8 @@ const styles = StyleSheet.create({
   chatNotice: { flexDirection: "row", alignItems: "center", gap: spacing.sm, paddingVertical: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.line },
   noticeGlyph: { color: colors.primary, fontSize: 18 },
   noticeText: { flex: 1, color: colors.muted, fontSize: typography.caption },
-  messages: { flex: 1, minHeight: 260, maxHeight: 420, marginTop: spacing.md },
+  keyboardAvoider: { flex: 1 },
+  messages: { flex: 1, marginTop: spacing.md },
   messageList: { gap: spacing.md, paddingVertical: spacing.md },
   dayDivider: { color: colors.muted, fontSize: 10, fontWeight: "700", letterSpacing: 1.4, textAlign: "center", marginBottom: spacing.sm },
   messageRow: { flexDirection: "row", alignItems: "flex-end", gap: spacing.sm, maxWidth: "88%" },
