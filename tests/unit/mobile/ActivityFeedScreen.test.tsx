@@ -20,6 +20,7 @@ function post(overrides: Partial<Activity>): Activity {
     time: "19:00–23:00",
     period: "Evening",
     note: "",
+    hostId: "member-zeynep",
     host: "Zeynep Arslan",
     initials: "ZA",
     status: "open",
@@ -58,7 +59,7 @@ describe("filterFeed", () => {
 
   test("FR-10: own posts and matched posts are hidden, and the order is kept", () => {
     const newest = post({ id: "newest" });
-    const own = post({ id: "own", host: "You" });
+    const own = post({ id: "own", hostId: "me", host: "You" });
     const matched = post({ id: "matched", status: "matched" });
     const oldest = post({ id: "oldest" });
 

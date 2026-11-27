@@ -6,14 +6,14 @@ import { Avatar, Button, Card, Chip, Page, PageHeader, SectionTitle, Tag, Field 
 import type { RootStackParamList } from "../navigation/types";
 import { usePrototypeData } from "../prototype/PrototypeData";
 import type { ActivityCategory } from "../prototype/PrototypeData";
-import { colors, radii, spacing, typography } from "../theme/tokens";
+import { colors, spacing, typography } from "../theme/tokens";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 const activityOptions: ActivityCategory[] = ["Library", "Gym", "Cafeteria"];
 
 export function ProfileScreen() {
   const navigation = useNavigation<Navigation>();
-  const { profile } = usePrototypeData();
+  const { profile, role, setRole } = usePrototypeData();
   const interests = profile.interests.split(",").map((interest) => interest.trim()).filter(Boolean);
   return (
     <Page activeTab="Profile" onTabSelect={(tab) => navigation.navigate(tab)}>
@@ -44,7 +44,14 @@ export function ProfileScreen() {
       </Card>
       <SectionTitle title="Safety & account" />
       <MenuRow label="Blocked accounts" detail="Manage who can contact you" icon="⊘" onPress={() => navigation.navigate("Safety")} />
-      <MenuRow label="Admin moderation preview" detail="Admin-only screen concept" icon="▤" onPress={() => navigation.navigate("AdminReports")} />
+      {role === "admin" ? (
+        <MenuRow label="Review reports" detail="Administrator · moderation" icon="▤" onPress={() => navigation.navigate("AdminReports")} />
+      ) : null}
+      <SectionTitle title="Prototype role" />
+      <View style={styles.chips}>
+        <Chip label="Member" selected={role === "member"} onPress={() => setRole("member")} />
+        <Chip label="Administrator" selected={role === "admin"} onPress={() => setRole("admin")} />
+      </View>
       <Pressable onPress={() => Alert.alert("Demo account", "Sign-out is not connected in this prototype.")} style={styles.signOut}>
         <Text style={styles.signOutText}>Sign out of demo</Text>
       </Pressable>
@@ -117,81 +124,23 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-export function SafetyScreen() {
-  const navigation = useNavigation<Navigation>();
-  const [blocked, setBlocked] = useState(false);
-  return (
-    <Page showTabs={false}>
-      <PageHeader title="Your safety" subtitle="Feel comfortable showing up" onBack={() => navigation.goBack()} />
-      <Text style={styles.safetyIntro}>You’re in control of who can see your posts and reach you.</Text>
-      <SectionTitle title="Blocked accounts" />
-      {blocked ? (
-        <MenuRow label="Student account" detail="Blocked from your feed and messages" icon="⊘" onPress={() => setBlocked(false)} action="Unblock" />
-      ) : (
-        <Card style={styles.emptyCard}>
-          <Text style={styles.preferenceTitle}>Your block list is clear.</Text>
-          <Text style={styles.preferenceText}>Block someone from an activity or profile to hide each other’s posts and stop contact.</Text>
-        </Card>
-      )}
-      <SectionTitle title="Need a hand?" />
-      <Card style={styles.safetyCard}>
-        <Text style={styles.preferenceTitle}>Report something that feels off</Text>
-        <Text style={styles.preferenceText}>Reports are private and reviewed by an administrator.</Text>
-        <View style={styles.saveButton}>
-          <Button label="Report a user or post" variant="secondary" onPress={() => navigation.navigate("Report")} />
-        </View>
-      </Card>
-      <SectionTitle title="Demo interaction" />
-      <Button label={blocked ? "Unblock sample account" : "Block sample account"} variant="quiet" onPress={() => setBlocked(!blocked)} />
-    </Page>
-  );
-}
-
-export function AdminReportsScreen() {
-  const navigation = useNavigation<Navigation>();
-  const [status, setStatus] = useState<"Open" | "Dismissed" | "Suspended">("Open");
-  const [selected, setSelected] = useState("student");
-  const action = (next: "Dismissed" | "Suspended") => {
-    setStatus(next);
-    Alert.alert(next === "Dismissed" ? "Report dismissed" : "Account suspended", "This is a sample admin action; no account data changed.");
-  };
-  return (
-    <Page showTabs={false}>
-      <PageHeader title="Admin · Reports" subtitle="Restricted moderation preview" onBack={() => navigation.goBack()} />
-      <View style={styles.adminNotice}><Text style={styles.adminNoticeText}>ADMIN ROLE ONLY · SAMPLE DATA</Text></View>
-      <SectionTitle title="Open reports" action={<Tag label={status.toUpperCase()} tone={status === "Open" ? "peach" : "muted"} />} />
-      <MenuRow label="Student account" detail="Spam · Reported today" icon="○" onPress={() => setSelected("student")} action={selected === "student" ? "Selected" : undefined} />
-      <MenuRow label="Activity post" detail="Inappropriate content · Yesterday" icon="▤" onPress={() => setSelected("activity")} action={selected === "activity" ? "Selected" : undefined} />
-      <SectionTitle title="Report details" />
-      <Card style={styles.safetyCard}>
-        <Text style={styles.preferenceTitle}>{selected === "student" ? "Student account" : "Activity post"}</Text>
-        <Text style={styles.preferenceText}>Reason: {selected === "student" ? "Spam" : "Inappropriate content"}</Text>
-        <Text style={styles.reportBody}>“Please review this content. It made me uncomfortable.”</Text>
-      </Card>
-      <View style={styles.adminActions}>
-        <Button label="Dismiss report" variant="secondary" onPress={() => action("Dismissed")} />
-        <Button label="Suspend account" variant="danger" onPress={() => action("Suspended")} />
-      </View>
-      <Text style={styles.disclaimer}>A real suspension requires an audit reason and confirmation.</Text>
-    </Page>
-  );
-}
-
-function MenuRow({
+export function MenuRow({
   label,
   detail,
   icon,
   onPress,
   action,
+  accessibilityLabel,
 }: {
   label: string;
   detail: string;
   icon: string;
   onPress: () => void;
   action?: string;
+  accessibilityLabel?: string;
 }) {
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={styles.menuRow}>
+    <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} style={styles.menuRow}>
       <View style={styles.menuIcon}><Text style={styles.menuGlyph}>{icon}</Text></View>
       <View style={styles.menuText}>
         <Text style={styles.menuTitle}>{label}</Text>
@@ -222,11 +171,4 @@ const styles = StyleSheet.create({
   signOutText: { color: colors.danger, fontSize: typography.label, fontWeight: "700" },
   disclaimer: { color: colors.muted, fontSize: typography.caption, textAlign: "center", lineHeight: 17, paddingTop: spacing.md },
   saveButton: { marginTop: spacing.lg },
-  safetyIntro: { color: colors.muted, fontSize: typography.body, lineHeight: 22 },
-  emptyCard: { gap: spacing.sm, borderRadius: radii.lg },
-  safetyCard: { gap: spacing.sm },
-  adminNotice: { padding: spacing.md, borderRadius: radii.md, backgroundColor: colors.lavender, alignItems: "center" },
-  adminNoticeText: { color: colors.ink, fontSize: 10, fontWeight: "800", letterSpacing: 1.2 },
-  reportBody: { color: colors.ink, fontSize: typography.label, lineHeight: 20, marginTop: spacing.sm },
-  adminActions: { gap: spacing.sm, marginTop: spacing.lg },
 });

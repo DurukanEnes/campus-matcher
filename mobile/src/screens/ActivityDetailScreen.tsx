@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Avatar, Button, Card, Field, Page, PageHeader, Tag } from "../components/DesignSystem";
-import { checkJoinRequest, usePrototypeData } from "../prototype/PrototypeData";
+import { CURRENT_MEMBER_ID, checkJoinRequest, usePrototypeData } from "../prototype/PrototypeData";
 import type { RootStackParamList } from "../navigation/types";
 import { colors, radii, spacing, typography } from "../theme/tokens";
 
@@ -14,11 +14,11 @@ type DetailRoute = RouteProp<RootStackParamList, "ActivityDetail">;
 export default function ActivityDetailScreen() {
   const navigation = useNavigation<Navigation>();
   const route = useRoute<DetailRoute>();
-  const { activities, requests, sendRequest } = usePrototypeData();
+  const { activities, requests, sendRequest, blockedIds, members } = usePrototypeData();
   const [message, setMessage] = useState("Hi! I’d love to join you.");
   const activity = activities.find((item) => item.id === route.params.activityId);
 
-  if (!activity) {
+  if (!activity || members[activity.hostId]?.status === "suspended") {
     return (
       <Page showTabs={false}>
         <PageHeader title="Plan not found" subtitle="It may have ended or been removed" onBack={() => navigation.goBack()} />
@@ -27,7 +27,7 @@ export default function ActivityDetailScreen() {
     );
   }
 
-  const requestState = checkJoinRequest(activities, requests, activity.id);
+  const requestState = checkJoinRequest(activities, requests, activity.id, { blockedIds, members });
 
   const request = () => {
     if (sendRequest(activity.id, message.trim()) === "sent") {
@@ -46,13 +46,20 @@ export default function ActivityDetailScreen() {
         <Text style={styles.title}>{activity.venue}</Text>
         <Text style={styles.date}>{activity.date} · {activity.time}</Text>
         <View style={styles.divider} />
-        <View style={styles.hostRow}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`View ${activity.host}'s profile`}
+          disabled={activity.hostId === CURRENT_MEMBER_ID}
+          onPress={() => navigation.navigate("MemberProfile", { memberId: activity.hostId })}
+          style={styles.hostRow}
+        >
           <Avatar initials={activity.initials} size={44} tone="peach" />
-          <View>
+          <View style={styles.hostText}>
             <Text style={styles.hostName}>{activity.host}</Text>
-            <Text style={styles.hostSubtitle}>İTÜ member · campus regular</Text>
+            <Text style={styles.hostSubtitle}>{members[activity.hostId]?.department ?? "İTÜ member"} · İTÜ member</Text>
           </View>
-        </View>
+          {activity.hostId !== CURRENT_MEMBER_ID ? <Text style={styles.hostChevron}>›</Text> : null}
+        </Pressable>
       </Card>
 
       <Text style={styles.sectionLabel}>THE PLAN</Text>
@@ -84,6 +91,8 @@ export default function ActivityDetailScreen() {
           <Text style={styles.stateBody}>{stateCopy[requestState].body}</Text>
           {requestState === "own-post" ? (
             <Button label="See requests for your plans" variant="secondary" onPress={() => navigation.navigate("Requests", { tab: "Incoming" })} />
+          ) : requestState === "blocked" ? (
+            <Button label="Manage blocked accounts" variant="secondary" onPress={() => navigation.navigate("Safety")} />
           ) : requestState === "duplicate" ? (
             <Button label="View your sent requests" variant="secondary" onPress={() => navigation.navigate("Requests", { tab: "Sent" })} />
           ) : (
@@ -106,6 +115,7 @@ export default function ActivityDetailScreen() {
 const stateCopy: Record<Exclude<ReturnType<typeof checkJoinRequest>, "sent">, { title: string; body: string }> = {
   "own-post": { title: "This is your plan", body: "Requests from other members will appear in your inbox." },
   duplicate: { title: "Request sent", body: "You already asked to join. The host will accept or decline soon." },
+  blocked: { title: "You blocked this member", body: "You can't send requests to members you've blocked. Unblock them to join." },
   closed: { title: "This plan is already matched", body: "The host has found a companion, so it no longer takes requests." },
   "not-found": { title: "Plan not found", body: "It may have ended or been removed." },
 };
@@ -118,6 +128,8 @@ const styles = StyleSheet.create({
   date: { color: colors.primary, fontSize: typography.label, fontWeight: "600", marginTop: spacing.sm },
   divider: { height: 1, backgroundColor: colors.line, marginVertical: spacing.lg },
   hostRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  hostText: { flex: 1 },
+  hostChevron: { color: colors.muted, fontSize: 24 },
   hostName: { color: colors.ink, fontSize: typography.label, fontWeight: "700" },
   hostSubtitle: { color: colors.muted, fontSize: typography.caption, marginTop: spacing.xs },
   sectionLabel: { color: colors.primary, fontSize: typography.caption, fontWeight: "800", letterSpacing: 1.3, marginTop: spacing.xl },

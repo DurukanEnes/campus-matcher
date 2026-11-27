@@ -2,9 +2,9 @@ import { useMemo, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Avatar, Button, Card, Chip, Page, PageHeader, SectionTitle, Tag } from "../components/DesignSystem";
-import { usePrototypeData } from "../prototype/PrototypeData";
+import { getHiddenMemberIds, usePrototypeData } from "../prototype/PrototypeData";
 import type { RootStackParamList } from "../navigation/types";
 import { colors, radii, spacing, typography } from "../theme/tokens";
 
@@ -14,14 +14,20 @@ type RequestTab = "Incoming" | "Sent";
 
 export default function RequestsScreen() {
   const navigation = useNavigation<Navigation>();
-  const { activities, requests, updateRequest } = usePrototypeData();
+  const { activities, requests, updateRequest, members, blockedIds } = usePrototypeData();
   const route = useRoute<RequestsRoute>();
   const [tab, setTab] = useState<RequestTab>(route.params?.tab ?? "Incoming");
   const visibleRequests = useMemo(
-    () => requests.filter((request) =>
-      tab === "Incoming" ? request.direction === "incoming" : request.direction === "outgoing",
-    ),
-    [requests, tab],
+    () => {
+      // FR-20: requests from blocked or suspended members are not shown to the post owner.
+      const hidden = getHiddenMemberIds(members, blockedIds);
+      return requests.filter((request) =>
+        tab === "Incoming"
+          ? request.direction === "incoming" && !hidden.has(request.requesterId)
+          : request.direction === "outgoing",
+      );
+    },
+    [blockedIds, members, requests, tab],
   );
 
   return (
@@ -40,12 +46,21 @@ export default function RequestsScreen() {
           <Card key={request.id} style={styles.requestCard}>
             <View style={styles.requestHeader}>
               <Avatar initials={request.initials} size={46} tone={isIncoming ? "lavender" : "green"} />
-              <View style={styles.requestIdentity}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`View ${isIncoming ? request.requester : activity?.host ?? "host"}'s profile`}
+                onPress={() =>
+                  navigation.navigate("MemberProfile", {
+                    memberId: isIncoming ? request.requesterId : activity?.hostId ?? "",
+                  })
+                }
+                style={styles.requestIdentity}
+              >
                 <Text style={styles.name}>{request.requester}</Text>
                 <Text style={styles.when}>
                   {isIncoming ? `${request.requesterDepartment} · İTÜ member` : `To ${activity?.host ?? "the host"}`}
                 </Text>
-              </View>
+              </Pressable>
               <Tag
                 label={request.status.toUpperCase()}
                 tone={request.status === "accepted" ? "green" : request.status === "declined" ? "muted" : "peach"}
