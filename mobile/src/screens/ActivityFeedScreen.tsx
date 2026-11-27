@@ -4,7 +4,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import ActivityCard from "../components/ActivityCard";
 import { Chip, Page, PageHeader, SectionTitle } from "../components/DesignSystem";
-import { usePrototypeData } from "../prototype/PrototypeData";
+import { CURRENT_MEMBER_ID, getHiddenMemberIds, usePrototypeData } from "../prototype/PrototypeData";
 import type { Activity, ActivityCategory } from "../prototype/PrototypeData";
 import type { RootStackParamList } from "../navigation/types";
 import { colors, spacing, typography } from "../theme/tokens";
@@ -32,11 +32,17 @@ export function startHour(time: string): number {
 /**
  * Feed rules from FR-10 to FR-12: only other members' open posts, filtered by category,
  * start hour, and venue; the filters can be combined. Order is kept (newest first).
+ * Posts of blocked (FR-20) and suspended (FR-23) members are never shown.
  */
-export function filterFeed(activities: Activity[], filters: FeedFilters): Activity[] {
+export function filterFeed(
+  activities: Activity[],
+  filters: FeedFilters,
+  hiddenHostIds: ReadonlySet<string> = new Set(),
+): Activity[] {
   const venue = filters.venue.trim().toLowerCase();
   return activities.filter((activity) => {
-    if (activity.status !== "open" || activity.host === "You") return false;
+    if (activity.status !== "open" || activity.hostId === CURRENT_MEMBER_ID) return false;
+    if (hiddenHostIds.has(activity.hostId)) return false;
     if (filters.category !== "All" && activity.category !== filters.category) return false;
     if (filters.hour !== "Any time") {
       const [from, to] = hourRanges[filters.hour];
@@ -49,10 +55,13 @@ export function filterFeed(activities: Activity[], filters: FeedFilters): Activi
 
 export default function ActivityFeedScreen() {
   const navigation = useNavigation<Navigation>();
-  const { activities } = usePrototypeData();
+  const { activities, members, blockedIds } = usePrototypeData();
   const [filters, setFilters] = useState<FeedFilters>(defaultFilters);
   const update = (patch: Partial<FeedFilters>) => setFilters((current) => ({ ...current, ...patch }));
-  const visibleActivities = useMemo(() => filterFeed(activities, filters), [activities, filters]);
+  const visibleActivities = useMemo(
+    () => filterFeed(activities, filters, getHiddenMemberIds(members, blockedIds)),
+    [activities, blockedIds, filters, members],
+  );
   const hasFilters = filters.category !== "All" || filters.hour !== "Any time" || filters.venue.trim() !== "";
 
   return (

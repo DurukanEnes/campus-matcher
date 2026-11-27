@@ -8,7 +8,8 @@ import CreateActivityScreen from "../screens/CreateActivityScreen";
 import HomeScreen from "../screens/HomeScreen";
 import RequestsScreen from "../screens/RequestsScreen";
 import ReportScreen from "../screens/ReportScreen";
-import { AdminReportsScreen, EditProfileScreen, ProfileScreen, SafetyScreen } from "../screens/ProfileScreens";
+import { EditProfileScreen, ProfileScreen } from "../screens/ProfileScreens";
+import { AdminReportsScreen, MemberProfileScreen, SafetyScreen } from "../screens/ModerationScreens";
 import { LoginScreen, RegisterScreen, VerifyEmailScreen } from "../screens/AuthScreens";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import type { RootStackParamList } from "./types";
@@ -43,6 +44,7 @@ export default function AppNavigator() {
           <Stack.Screen name="EditProfile" component={EditProfileScreen} />
           <Stack.Screen name="Safety" component={SafetyScreen} />
           <Stack.Screen name="AdminReports" component={AdminReportsScreen} />
+          <Stack.Screen name="MemberProfile" component={MemberProfileScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </PrototypeProvider>

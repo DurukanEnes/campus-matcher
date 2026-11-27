@@ -86,6 +86,7 @@ describe("checkJoinRequest (FR-13)", () => {
     time: "18:30–19:30",
     period: "Evening",
     note: "",
+    hostId: "member-ada",
     host: "Ada Demir",
     initials: "AD",
     status: "open",
@@ -94,6 +95,7 @@ describe("checkJoinRequest (FR-13)", () => {
   const outgoing = (status: JoinRequest["status"]): JoinRequest => ({
     id: "request",
     activityId: "post",
+    requesterId: "me",
     requester: "You",
     requesterDepartment: "Architecture",
     initials: "EO",
@@ -107,7 +109,7 @@ describe("checkJoinRequest (FR-13)", () => {
   });
 
   test("rejects own, matched, missing, and already-requested posts", () => {
-    expect(checkJoinRequest([activity({ host: "You" })], [], "post")).toBe("own-post");
+    expect(checkJoinRequest([activity({ hostId: "me", host: "You" })], [], "post")).toBe("own-post");
     expect(checkJoinRequest([activity({ status: "matched" })], [], "post")).toBe("closed");
     expect(checkJoinRequest([activity({})], [], "other")).toBe("not-found");
     expect(checkJoinRequest([activity({})], [outgoing("pending")], "post")).toBe("duplicate");
