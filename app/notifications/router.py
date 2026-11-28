@@ -1,15 +1,9 @@
-from typing import Annotated
+from fastapi import APIRouter, HTTPException, Response
 
-from fastapi import APIRouter, Depends, HTTPException, Response
-from sqlalchemy.orm import Session
-
-from app.database.models import User
+from app.auth.dependencies import CurrentUser
+from app.database.dependencies import DbSession
 from app.notifications import service
-from app.notifications.dependencies import get_current_user, get_db
 from app.notifications.schemas import DeviceTokenIn, NotificationPayload
-
-CurrentUser = Annotated[User, Depends(get_current_user)]
-DbSession = Annotated[Session, Depends(get_db)]
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 
