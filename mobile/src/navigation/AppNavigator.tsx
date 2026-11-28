@@ -1,7 +1,9 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { createNavigationContainerRef, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useRef } from "react";
 import { AuthProvider } from "../auth/AuthContext";
 import { ChatProvider } from "../chat/ChatContext";
+import { PushNotifications, type PushNotificationsHandle } from "../notifications/PushNotifications";
 import { PrototypeProvider } from "../prototype/PrototypeData";
 import ActivityDetailScreen from "../screens/ActivityDetailScreen";
 import ActivityFeedScreen from "../screens/ActivityFeedScreen";
@@ -18,13 +20,17 @@ import type { RootStackParamList } from "./types";
 import { colors } from "../theme/tokens";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 export default function AppNavigator() {
+  const push = useRef<PushNotificationsHandle>(null);
+
   return (
     <AuthProvider>
       <PrototypeProvider>
         <ChatProvider>
-          <NavigationContainer>
+          <PushNotifications navigation={navigationRef} ref={push} />
+          <NavigationContainer ref={navigationRef} onReady={() => push.current?.onNavigationReady()}>
             <Stack.Navigator
               initialRouteName="Welcome"
               screenOptions={{
