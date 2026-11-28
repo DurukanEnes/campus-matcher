@@ -1,5 +1,6 @@
 import type { PropsWithChildren, ReactNode } from "react";
 import {
+  KeyboardAvoidingView,
   Pressable,
   ScrollView,
   type StyleProp,
@@ -27,14 +28,17 @@ export function Page({
   showTabs = true,
   onTabSelect,
   scrollable = true,
+  avoidKeyboard = false,
 }: PropsWithChildren<{
   activeTab?: TabName;
   showTabs?: boolean;
   onTabSelect?: (tab: TabName) => void;
   scrollable?: boolean;
+  /** Lifts the page above the keyboard, for screens with an input at the bottom. */
+  avoidKeyboard?: boolean;
 }>) {
-  return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+  const page = (
+    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]} testID="page-safe-area">
       {scrollable ? (
         <ScrollView
           style={styles.scroll}
@@ -51,6 +55,16 @@ export function Page({
         <BottomTabs activeTab={activeTab} onTabSelect={onTabSelect} />
       ) : null}
     </SafeAreaView>
+  );
+
+  if (!avoidKeyboard) return page;
+  // KeyboardAvoidingView compares its layout (relative to its parent) with the keyboard
+  // position on the screen, so it must start at the top of the screen, outside the safe
+  // area. Android apps are edge-to-edge, so "padding" is used on both platforms.
+  return (
+    <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoider} testID="page-keyboard-avoider">
+      {page}
+    </KeyboardAvoidingView>
   );
 }
 
@@ -319,6 +333,7 @@ const avatarStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.canvas },
+  keyboardAvoider: { flex: 1, backgroundColor: colors.canvas },
   scroll: { flex: 1 },
   pageContent: { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl },
   brandMark: {

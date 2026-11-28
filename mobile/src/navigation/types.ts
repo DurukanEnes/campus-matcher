@@ -8,7 +8,7 @@ export type RootStackParamList = {
   ActivityDetail: { activityId: string };
   CreateActivity: undefined;
   Requests: { tab?: "Incoming" | "Sent" } | undefined;
-  Chat: { activityId: string };
+  Chat: { requestId: string };
   Report: { activityId?: string; memberId?: string } | undefined;
   MemberProfile: { memberId: string };
   Profile: undefined;

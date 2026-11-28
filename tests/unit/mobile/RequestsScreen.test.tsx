@@ -34,7 +34,7 @@ test("US-09: accepting one request opens the chat and declines the other pending
 
   await fireEvent.press(screen.getAllByRole("button", { name: /Accept & open chat/ })[0]);
 
-  expect(mockNavigate).toHaveBeenCalledWith("Chat", { activityId: "activity-cafe" });
+  expect(mockNavigate).toHaveBeenCalledWith("Chat", { requestId: "request-demo" });
   expect(screen.getByText("ACCEPTED")).toBeTruthy();
   expect(screen.getByText("DECLINED")).toBeTruthy();
   expect(screen.queryByText("PENDING")).toBeNull();

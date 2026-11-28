@@ -78,7 +78,7 @@ export default function RequestsScreen() {
                   icon="✓"
                   onPress={() => {
                     updateRequest(request.id, "accepted");
-                    navigation.navigate("Chat", { activityId: request.activityId });
+                    navigation.navigate("Chat", { requestId: request.id });
                   }}
                 />
                 <Button label="Decline" variant="quiet" onPress={() => updateRequest(request.id, "declined")} />
@@ -86,7 +86,7 @@ export default function RequestsScreen() {
             ) : request.status === "pending" ? (
               <Text style={styles.waiting}>Waiting for {activity?.host ?? "the host"} to answer.</Text>
             ) : request.status === "accepted" ? (
-              <Button label="Open activity chat" variant="secondary" onPress={() => navigation.navigate("Chat", { activityId: request.activityId })} />
+              <Button label="Open activity chat" variant="secondary" onPress={() => navigation.navigate("Chat", { requestId: request.id })} />
             ) : null}
           </Card>
         );
