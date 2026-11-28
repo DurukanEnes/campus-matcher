@@ -1,21 +1,12 @@
 import pytest
-from fastapi.testclient import TestClient
 
 from app.database.models import PushToken
-from app.main import app
 from app.notifications import fcm
-from app.notifications.dependencies import get_db
 
 
 @pytest.fixture
-def client(db):
-    app.dependency_overrides[get_db] = lambda: db
-    yield TestClient(app)
-    app.dependency_overrides.clear()
-
-
-def auth(user):
-    return {"X-User-Id": str(user.id)}
+def auth(auth_headers):
+    return auth_headers
 
 
 def test_requires_authentication(client):
@@ -23,15 +14,17 @@ def test_requires_authentication(client):
     assert client.post("/notifications/device-tokens", json=body).status_code == 401
 
 
-def test_unknown_user_is_rejected(client):
+def test_invalid_token_is_rejected(client):
     body = {"token": "t", "platform": "ANDROID"}
     response = client.post(
-        "/notifications/device-tokens", json=body, headers={"X-User-Id": "999"}
+        "/notifications/device-tokens",
+        json=body,
+        headers={"Authorization": "Bearer not-a-jwt"},
     )
     assert response.status_code == 401
 
 
-def test_register_token(client, db, make_user):
+def test_register_token(client, db, make_user, auth):
     user = make_user()
     body = {"token": "tok-1", "platform": "IOS"}
     response = client.post("/notifications/device-tokens", json=body, headers=auth(user))
@@ -39,14 +32,14 @@ def test_register_token(client, db, make_user):
     assert db.query(PushToken).one().token == "tok-1"
 
 
-def test_invalid_platform_is_422(client, make_user):
+def test_invalid_platform_is_422(client, make_user, auth):
     user = make_user()
     body = {"token": "tok-1", "platform": "WINDOWS"}
     response = client.post("/notifications/device-tokens", json=body, headers=auth(user))
     assert response.status_code == 422
 
 
-def test_delete_token(client, db, make_user):
+def test_delete_token(client, db, make_user, auth):
     user = make_user()
     client.post(
         "/notifications/device-tokens",
@@ -64,7 +57,7 @@ def test_delete_token(client, db, make_user):
     )
 
 
-def test_send_test_notification(client, make_user, monkeypatch):
+def test_send_test_notification(client, make_user, monkeypatch, auth):
     user = make_user()
     calls = []
     monkeypatch.setattr(fcm, "send_message", lambda t, p: calls.append((t, p)))

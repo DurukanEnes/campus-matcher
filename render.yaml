@@ -1,7 +1,7 @@
 # WBS-11.2 — Staging environment on Render (free tier)
 # Render builds the Dockerfile and deploys every commit on main
 # after the GitHub Actions checks pass.
-# Secrets (DATABASE_URL, later JWT_SECRET) are set in the Render dashboard,
+# Secrets (DATABASE_URL, JWT_SECRET) are set in the Render dashboard,
 # never in this file.
 
 services:
@@ -27,6 +27,9 @@ services:
         value: staging
       - key: DATABASE_URL
         sync: false
+      # WBS-2.2: Render generates a random value once; it is never in this file.
+      - key: JWT_SECRET
+        generateValue: true
       # Firebase service-account JSON (FCM push notifications); set in the dashboard.
       - key: FIREBASE_CREDENTIALS_JSON
         sync: false
